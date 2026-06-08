@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>ترتيب المتسابقين - مسابقة كأس العالم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('partials/sidebar', { active: 'leaderboard', user: user, top3: top3 }) %>
+    <main class="main-content">
+      <section class="page-content">
+
+        <!-- ===== MOBILE LEADERBOARD (≤860px) ===== -->
+        <div class="lb">
+
+          <!-- 1. Header -->
+          <div class="lb-header">
+            <div class="lb-header-bg"></div>
+            <div class="lb-header-inner">
+              <div style="width:40px;"></div>
+              <div class="lb-header-logo">
+                <img src="/logo.png" alt="شعار المسابقة" style="width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(212,175,55,0.35));">
+              </div>
+              <span class="lb-header-guide" onclick="window.location='/rules'">دليل التوقع</span>
+            </div>
+            <h1 class="lb-header-title">ترتيب المتسابقين</h1>
+            <p class="lb-header-update">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              آخر تحديث قبل 3 دقائق
+            </p>
+          </div>
+
+          <!-- 2. Podium Top 3 -->
+          <div class="lb-podium">
+            <!-- 2nd Place (left) -->
+            <% if (leaderboard.length >= 2) { %>
+            <div class="lb-pod-card lb-pod-silver">
+              <div class="lb-pod-crown"><span>🥈</span></div>
+              <div class="lb-pod-avatar lb-pod-avatar-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <div class="lb-pod-badge lb-pod-badge-2">2</div>
+              <div class="lb-pod-name"><%= leaderboard[1].name %></div>
+              <div class="lb-pod-pts"><%= leaderboard[1].total.toLocaleString('ar-EG') %> نقطة</div>
+              <div class="lb-pod-correct"><%= leaderboard[1].correct_predictions %> توقع صحيح</div>
+            </div>
+            <% } else { %>
+            <div class="lb-pod-card lb-pod-silver lb-pod-empty"><span class="lb-pod-empty-text">—</span></div>
+            <% } %>
+
+            <!-- 1st Place (center, tallest) -->
+            <% if (leaderboard.length >= 1) { %>
+            <div class="lb-pod-card lb-pod-gold">
+              <div class="lb-pod-crown lb-pod-crown-gold"><span>👑</span></div>
+              <div class="lb-pod-avatar lb-pod-avatar-lg">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <div class="lb-pod-badge lb-pod-badge-1">1</div>
+              <div class="lb-pod-name"><%= leaderboard[0].name %></div>
+              <div class="lb-pod-pts"><%= leaderboard[0].total.toLocaleString('ar-EG') %> نقطة</div>
+              <div class="lb-pod-correct"><%= leaderboard[0].correct_predictions %> توقع صحيح</div>
+            </div>
+            <% } else { %>
+            <div class="lb-pod-card lb-pod-gold lb-pod-empty"><span class="lb-pod-empty-text">—</span></div>
+            <% } %>
+
+            <!-- 3rd Place (right) -->
+            <% if (leaderboard.length >= 3) { %>
+            <div class="lb-pod-card lb-pod-bronze">
+              <div class="lb-pod-crown"><span>🥉</span></div>
+              <div class="lb-pod-avatar lb-pod-avatar-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <div class="lb-pod-badge lb-pod-badge-3">3</div>
+              <div class="lb-pod-name"><%= leaderboard[2].name %></div>
+              <div class="lb-pod-pts"><%= leaderboard[2].total.toLocaleString('ar-EG') %> نقطة</div>
+              <div class="lb-pod-correct"><%= leaderboard[2].correct_predictions %> توقع صحيح</div>
+            </div>
+            <% } else { %>
+            <div class="lb-pod-card lb-pod-bronze lb-pod-empty"><span class="lb-pod-empty-text">—</span></div>
+            <% } %>
+          </div>
+
+          <!-- 3. My Rank Card -->
+          <% if (userEntry) { %>
+          <div class="lb-myrank">
+            <div class="lb-myrank-left">
+              <div class="lb-myrank-avatar">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <span class="lb-myrank-label">ترتيبك الحالي</span>
+              <span class="lb-myrank-num">#<%= userRank %></span>
+              <span class="lb-myrank-pts"><%= userEntry.total.toLocaleString('ar-EG') %> نقطة</span>
+            </div>
+            <div class="lb-myrank-vr"></div>
+            <div class="lb-myrank-right">
+              <span class="lb-myrank-gap">
+                <% if (gapToFifth > 0) { %>
+                  تبعد <strong><%= gapToFifth.toLocaleString('ar-EG') %></strong> نقطة عن المركز الخامس
+                <% } else if (userRank <= 5) { %>
+                  أنت ضمن أفضل 5 متسابقين
+                <% } else { %>
+                  لا يوجد متسابقون كافيون
+                <% } %>
+              </span>
+              <div class="lb-myrank-progress">
+                <div class="lb-myrank-bar" style="width: <%= Math.min(100, leaderboard[0] ? (userEntry.total / leaderboard[0].total) * 100 : 0) %>%"></div>
+              </div>
+              <div class="lb-myrank-labels">
+                <span>المركز <%= userRank %></span>
+                <span><%= userRank <= 5 ? 'المركز 1' : 'المركز 5' %></span>
+              </div>
+            </div>
+          </div>
+          <% } %>
+
+          <!-- 4. Leaderboard List (rank 4+) -->
+          <div class="lb-list-wrap">
+            <div class="lb-list-header">
+              <span class="lb-lh-rank">الترتيب</span>
+              <span class="lb-lh-player">المتسابق</span>
+              <span class="lb-lh-pts">النقاط</span>
+              <span class="lb-lh-correct">صحيح</span>
+              <span class="lb-lh-move">الحركة</span>
+            </div>
+            <% if (leaderboard.length <= 3) { %>
+            <div class="lb-empty">
+              <div class="lb-empty-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
+              </div>
+              <p>لم يكتمل الترتيب بعد<br>سيظهر الترتيب بعد تسجيل أول نتائج المباريات</p>
+            </div>
+            <% } else { %>
+              <% leaderboard.slice(3).forEach(function(p, i) {
+                var rank = i + 4;
+                var isMe = p.id === user.id;
+              %>
+              <div class="lb-row <%= isMe ? 'lb-row-me' : '' %>" data-rank="<%= rank %>">
+                <span class="lb-row-rank"><%= rank %></span>
+                <div class="lb-row-player">
+                  <div class="lb-row-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  </div>
+                  <div class="lb-row-info">
+                    <span class="lb-row-name"><%= p.name %></span>
+                    <span class="lb-row-correct"><%= p.correct_predictions %> توقع صحيح</span>
+                  </div>
+                  <% if (isMe) { %><span class="lb-row-me-label">أنت</span><% } %>
+                </div>
+                <span class="lb-row-pts"><%= p.total.toLocaleString('ar-EG') %></span>
+                <span class="lb-row-correct-num"><%= p.correct_predictions %></span>
+                <span class="lb-row-move">—</span>
+              </div>
+            <% }); } %>
+          </div>
+
+          <!-- 5. Prizes Card -->
+          <div class="lb-prizes">
+            <div class="lb-prizes-head">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
+              الجوائز
+            </div>
+            <div class="lb-prizes-body">
+              <div class="lb-prize">
+                <div class="lb-prize-icon lb-prize-gold">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg>
+                </div>
+                <span class="lb-prize-title">المركز الأول</span>
+                <span class="lb-prize-amount">500 ريال</span>
+              </div>
+              <div class="lb-prize-vr"></div>
+              <div class="lb-prize">
+                <div class="lb-prize-icon lb-prize-silver">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg>
+                </div>
+                <span class="lb-prize-title">المركز الثاني</span>
+                <span class="lb-prize-amount">250 ريال</span>
+              </div>
+              <div class="lb-prize-vr"></div>
+              <div class="lb-prize">
+                <div class="lb-prize-icon lb-prize-bronze">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg>
+                </div>
+                <span class="lb-prize-title">المركز الثالث</span>
+                <span class="lb-prize-amount">100 ريال</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- ===== END MOBILE LEADERBOARD ===== -->
+
+        <!-- ===== DESKTOP LEADERBOARD (≥861px) ===== -->
+        <div class="lb-desktop">
+          <!-- Topbar -->
+          <header class="lb-topbar">
+            <div class="lb-topbar-right">
+              <h1 class="lb-topbar-title">ترتيب المتسابقين 🏆</h1>
+              <p class="lb-topbar-subtitle">يتم تحديث النقاط والترتيب تلقائياً بعد اعتماد نتائج المباريات</p>
+            </div>
+          </header>
+
+          <!-- Stats Bar -->
+          <div class="lb-stats">
+            <div class="lb-stat-card">
+              <div class="lb-stat-icon lb-stat-blue">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              </div>
+              <div class="lb-stat-info">
+                <span class="lb-stat-num"><%= stats.totalPlayers.toLocaleString('ar-EG') %></span>
+                <span class="lb-stat-lbl">عدد المشاركين</span>
+              </div>
+            </div>
+            <div class="lb-stat-card">
+              <div class="lb-stat-icon lb-stat-green">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+              </div>
+              <div class="lb-stat-info">
+                <span class="lb-stat-num"><%= stats.totalPredictions.toLocaleString('ar-EG') %></span>
+                <span class="lb-stat-lbl">عدد التوقعات</span>
+              </div>
+            </div>
+            <div class="lb-stat-card">
+              <div class="lb-stat-icon lb-stat-purple">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              </div>
+              <div class="lb-stat-info">
+                <span class="lb-stat-num"><%= stats.totalMatches %></span>
+                <span class="lb-stat-lbl">عدد المباريات</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Podium -->
+          <div class="lb-podium">
+            <% if (leaderboard.length >= 2) { %>
+            <div class="lb-podium-card lb-podium-silver">
+              <div class="lb-podium-medal">🥈</div>
+              <div class="lb-podium-badge-num">2</div>
+              <div class="lb-podium-avatar lb-avatar-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <div class="lb-podium-name"><%= leaderboard[1].name %></div>
+              <div class="lb-podium-points"><%= leaderboard[1].total.toLocaleString('ar-EG') %> نقطة</div>
+              <div class="lb-podium-correct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                توقعات صحيحة <strong><%= leaderboard[1].correct_predictions %></strong>
+              </div>
+            </div>
+            <% } %>
+            <% if (leaderboard.length >= 1) { %>
+            <div class="lb-podium-card lb-podium-gold">
+              <div class="lb-podium-medal">🥇</div>
+              <div class="lb-podium-badge-num">1</div>
+              <div class="lb-podium-avatar lb-avatar-lg">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="36" height="36"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <div class="lb-podium-crown">ملك التوقعات 👑</div>
+              <div class="lb-podium-name"><%= leaderboard[0].name %></div>
+              <div class="lb-podium-points lb-points-gold"><%= leaderboard[0].total.toLocaleString('ar-EG') %> نقطة</div>
+              <div class="lb-podium-correct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                توقعات صحيحة <strong><%= leaderboard[0].correct_predictions %></strong>
+              </div>
+            </div>
+            <% } %>
+            <% if (leaderboard.length >= 3) { %>
+            <div class="lb-podium-card lb-podium-bronze">
+              <div class="lb-podium-medal">🥉</div>
+              <div class="lb-podium-badge-num">3</div>
+              <div class="lb-podium-avatar lb-avatar-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <div class="lb-podium-name"><%= leaderboard[2].name %></div>
+              <div class="lb-podium-points"><%= leaderboard[2].total.toLocaleString('ar-EG') %> نقطة</div>
+              <div class="lb-podium-correct">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                توقعات صحيحة <strong><%= leaderboard[2].correct_predictions %></strong>
+              </div>
+            </div>
+            <% } %>
+          </div>
+
+          <!-- User Card -->
+          <% if (userEntry) { %>
+          <div class="lb-user-card">
+            <div class="lb-user-card-avatar">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <div class="lb-user-card-info">
+              <div class="lb-user-card-rank">ترتيبك الحالي <strong>#<%= userRank %></strong></div>
+              <div class="lb-user-card-points">عدد النقاط <strong><%= userEntry.total.toLocaleString('ar-EG') %></strong></div>
+              <div class="lb-user-card-gap">
+                تفصلنك <strong><%= gapToLeader.toLocaleString('ar-EG') %></strong> نقطة عن المركز الثالث
+                <div class="lb-user-progress">
+                  <div class="lb-user-progress-bar" style="width: <%= Math.min(100, leaderboard[0] ? (userEntry.total / leaderboard[0].total) * 100 : 0) %>%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="lb-user-card-actions">
+              <a href="#leaderboard-table" class="lb-user-detail-btn">عرض التفاصيل</a>
+            </div>
+          </div>
+          <% } %>
+
+          <!-- Main Layout -->
+          <div class="lb-main-layout">
+            <div class="lb-table-section">
+              <div class="lb-filters">
+                <div class="lb-search-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="lb-search" placeholder="ابحث عن متسابق..." class="lb-search-input" oninput="lbFilterTable()">
+                </div>
+                <div class="lb-filter-pills">
+                  <button class="lb-pill active" onclick="lbSetFilter('all', this)">الكل</button>
+                  <button class="lb-pill" onclick="lbSetFilter(10, this)">أفضل 10</button>
+                  <button class="lb-pill" onclick="lbSetFilter(50, this)">أفضل 50</button>
+                </div>
+                <select class="lb-sort-select" id="lb-filter-type">
+                  <option value="all">حسب</option>
+                  <option value="top10">أفضل 10</option>
+                  <option value="top50">أفضل 50</option>
+                </select>
+                <select class="lb-sort-select" id="lb-sort" onchange="lbFilterTable()">
+                  <option value="total">النقاط</option>
+                  <option value="success_rate">نسبة النجاح</option>
+                  <option value="correct_predictions">التوقعات الصحيحة</option>
+                </select>
+              </div>
+              <div class="lb-table-wrap">
+                <table class="lb-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>المتسابق</th>
+                      <th>النقاط</th>
+                      <th>التوقعات الصحيحة</th>
+                      <th>نسبة النجاح</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lb-tbody">
+                    <% leaderboard.forEach(function(p, i) { %>
+                    <tr class="lb-row <%= p.id === user.id ? 'lb-row-me' : '' %>" data-index="<%= i + 1 %>">
+                      <td><span class="lb-rank <%= i < 3 ? 'lb-rank-top' : '' %>"><%= i + 1 %></span></td>
+                      <td>
+                        <div class="lb-player-cell">
+                          <div class="lb-avatar-circle lb-avatar-color-<%= (i % 6) + 1 %>">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                          </div>
+                          <span class="lb-player-name"><%= p.name %></span>
+                          <% if (p.id === user.id) { %><span class="lb-me-badge">أنت</span><% } %>
+                        </div>
+                      </td>
+                      <td class="lb-cell-points"><strong><%= p.total.toLocaleString('ar-EG') %></strong></td>
+                      <td class="lb-cell-correct"><%= p.correct_predictions %></td>
+                      <td><span class="lb-rate-badge"><%= p.success_rate %>%</span></td>
+                    </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+                <% if (leaderboard.length === 0) { %>
+                <div class="lb-empty">
+                  <div class="lb-empty-icon">🏆</div>
+                  <div class="lb-empty-title">لا يوجد متسابقين بعد</div>
+                  <div class="lb-empty-text">سيظهر الترتيب هنا بعد تسجيل اللاعبين وتسجيل التوقعات.</div>
+                </div>
+                <% } %>
+              </div>
+            </div>
+            <div class="lb-side-section">
+              <div class="lb-side-title">إحصائيات سريعة</div>
+              <div class="lb-side-card">
+                <div class="lb-side-card-icon lb-side-gold">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
+                </div>
+                <div class="lb-side-card-info">
+                  <span class="lb-side-card-label">أعلى نقاط</span>
+                  <span class="lb-side-card-value"><%= stats.topScore ? stats.topScore.value.toLocaleString('ar-EG') : '0' %></span>
+                  <span class="lb-side-card-name"><%= stats.topScore ? stats.topScore.name : '-' %></span>
+                </div>
+              </div>
+              <div class="lb-side-card">
+                <div class="lb-side-card-icon lb-side-green">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                </div>
+                <div class="lb-side-card-info">
+                  <span class="lb-side-card-label">أكثر توقعات صحيحة</span>
+                  <span class="lb-side-card-value"><%= stats.topCorrect ? stats.topCorrect.value : '0' %></span>
+                  <span class="lb-side-card-name"><%= stats.topCorrect ? stats.topCorrect.name : '-' %></span>
+                </div>
+              </div>
+              <div class="lb-side-card">
+                <div class="lb-side-card-icon lb-side-blue">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                </div>
+                <div class="lb-side-card-info">
+                  <span class="lb-side-card-label">أفضل نسبة نجاح</span>
+                  <span class="lb-side-card-value"><%= stats.topRate ? stats.topRate.value + '%' : '0%' %></span>
+                  <span class="lb-side-card-name"><%= stats.topRate ? stats.topRate.name : '-' %></span>
+                </div>
+              </div>
+              <a href="/leaderboard" class="lb-side-all-btn">عرض جميع الإحصائيات</a>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <script>
+    var lbCurrentFilter = 'all';
+    function lbSetFilter(filter, el) {
+      lbCurrentFilter = filter;
+      document.querySelectorAll('.lb-pill').forEach(function(p) { p.classList.remove('active'); });
+      el.classList.add('active');
+      lbFilterTable();
+    }
+    function lbFilterTable() {
+      var search = (document.getElementById('lb-search')?.value || '').toLowerCase();
+      var sort = document.getElementById('lb-sort')?.value || 'total';
+      var rows = document.querySelectorAll('.lb-row');
+      rows.forEach(function(row) {
+        var name = row.querySelector('.lb-player-name')?.textContent?.toLowerCase() || '';
+        var matchesSearch = !search || name.includes(search);
+        var matchesFilter = true;
+        if (lbCurrentFilter !== 'all') {
+          matchesFilter = parseInt(row.dataset.index) <= lbCurrentFilter;
+        }
+        row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+      });
+    }
+  </script>
+<%- include('partials/mobile-nav', { active: 'leaderboard' }) %>
+</body>
+</html>

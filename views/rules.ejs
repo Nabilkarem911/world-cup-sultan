@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>نظام المسابقة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('partials/sidebar', { active: 'rules', user: user }) %>
+    <main class="main-content">
+      <%- include('partials/topbar', { pageTitle: 'نظام المسابقة', user: user }) %>
+      <section class="page-content">
+        <div class="card section-card">
+          <h2>قواعد حساب النقاط</h2>
+          <ul class="rule-list">
+            <li><strong>20 نقطة</strong> إذا كان التوقع مطابقاً للنتيجة الفعلية 100%.</li>
+            <li><strong>15 نقطة</strong> إذا توقعت الفريق الفائز صحيح وفارق الأهداف صحيح.</li>
+            <li><strong>10 نقاط</strong> إذا توقعت الفريق الفائز فقط بدون فارق أهداف صحيح.</li>
+            <li><strong>0 نقطة</strong> إذا كان الفائز غير صحيح أو انتهت المباراة بتعادل وتوقع مختلف.</li>
+          </ul>
+        </div>
+
+        <div class="card section-card">
+          <h2>كيفية المشاركة</h2>
+          <ol class="rule-list">
+            <li>سجل دخول أو أنشئ حساب جديد.</li>
+            <li>اذهب إلى صفحة "إضافة توقع" واختر نتيجة كل مباراة.</li>
+            <li>أدخل توقعك قبل 15 دقيقة من بداية المباراة.</li>
+            <li>بعد تسجيل النتيجة الفعلية في لوحة المدير، يتم تحديث النقاط والرتب تلقائياً.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+<%- include('partials/mobile-nav', { active: 'rules' }) %>
+</body>
+</html>

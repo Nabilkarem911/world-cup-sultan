@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>توقعات المتسابقين - مسابقة كأس العالم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <%- include('partials/sidebar', { active: 'players-predictions', user: user, top3: top3 }) %>
+    <main class="main-content">
+      <section class="page-content">
+
+<%
+  // Build accuracy lookup from leaderboard
+  var ppAccMap = {};
+  if (typeof leaderboard !== 'undefined') {
+    leaderboard.forEach(function(entry) {
+      ppAccMap[entry.id] = entry.success_rate || 0;
+    });
+  }
+%>
+
+        <!-- ===== MOBILE PLAYERS PREDICTIONS (≤860px) ===== -->
+        <div class="pp">
+
+          <!-- Header -->
+          <div class="pp-header">
+            <div class="pp-header-bg"></div>
+            <div class="pp-header-inner">
+              <div class="pp-header-logo">
+                <img src="/logo.png" alt="شعار مسابقة توقعات كأس العالم 2026" style="width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));">
+              </div>
+              <h1 class="pp-header-title">توقعات المتسابقين</h1>
+              <p class="pp-header-sub">اطلع على توقعات المتسابقين للمباريات المتاحة</p>
+            </div>
+          </div>
+
+          <!-- No matches state -->
+          <% if (matchesWithPredictions.length === 0) { %>
+          <div class="pp-empty-state">
+            <div class="pp-empty-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="40" height="40"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+            </div>
+            <h3>لا توجد مباريات متاحة لعرض التوقعات</h3>
+            <p>ستظهر هنا المباريات التي تسمح الإدارة بعرض توقعاتها</p>
+          </div>
+          <% } else { %>
+
+          <!-- Match List -->
+          <div class="pp-list">
+            <% matchesWithPredictions.forEach(function(item) {
+              var m = item.match;
+              var ended = m.actual_scoreA != null;
+              var matchDate = new Date(m.start_at);
+              var preds = item.predictions || [];
+
+              // Sort predictions: by accuracy desc, then points desc, then name
+              preds.sort(function(a, b) {
+                var accA = ppAccMap[a.user_id] || 0;
+                var accB = ppAccMap[b.user_id] || 0;
+                if (accB !== accA) return accB - accA;
+                var ptsA = 0, ptsB = 0;
+                if (leaderboard) {
+                  var eA = leaderboard.find(function(e) { return e.id === a.user_id; });
+                  var eB = leaderboard.find(function(e) { return e.id === b.user_id; });
+                  if (eA) ptsA = eA.total || 0;
+                  if (eB) ptsB = eB.total || 0;
+                }
+                if (ptsB !== ptsA) return ptsB - ptsA;
+                return (a.user_name || '').localeCompare(b.user_name || '');
+              });
+            %>
+            <div class="pp-card" data-pp-id="<%= m.id %>" onclick="ppToggle(<%= m.id %>)">
+              <!-- Match Info -->
+              <div class="pp-card-body">
+                <div class="pp-teams">
+                  <div class="pp-team">
+                    <img src="/flags/<%= teamFlags[m.teamA] || 'unknown' %>.png" alt="" class="pp-flag" onerror="this.src='/flags/unknown.png'">
+                    <span class="pp-team-name"><%= m.teamA %></span>
+                  </div>
+                  <div class="pp-vs">
+                    <% if (ended) { %>
+                      <span class="pp-score-badge"><%= m.actual_scoreA %>:<%= m.actual_scoreB %></span>
+                    <% } else { %>
+                      <span class="pp-vs-text">VS</span>
+                    <% } %>
+                  </div>
+                  <div class="pp-team">
+                    <img src="/flags/<%= teamFlags[m.teamB] || 'unknown' %>.png" alt="" class="pp-flag" onerror="this.src='/flags/unknown.png'">
+                    <span class="pp-team-name"><%= m.teamB %></span>
+                  </div>
+                </div>
+                <div class="pp-meta">
+                  <span class="pp-date"><%= matchDate.toLocaleDateString('ar-SA', { weekday:'long', month:'long', day:'numeric' }) %></span>
+                  <span class="pp-time"><%= matchDate.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) %></span>
+                  <span class="pp-stage"><%= m.stage || '' %><% if (m.round) { %> - الجولة <%= m.round %><% } %></span>
+                </div>
+              </div>
+
+              <!-- Expand Toggle -->
+              <div class="pp-toggle">
+                <span>عرض توقعات المتسابقين</span>
+                <svg class="pp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+
+              <!-- Accordion Content -->
+              <div class="pp-accordion">
+                <% if (preds.length === 0) { %>
+                  <div class="pp-no-preds">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    لا توجد توقعات معروضة لهذه المباراة حالياً
+                  </div>
+                <% } else { %>
+                  <div class="pp-table-wrap">
+                    <div class="pp-table">
+                      <div class="pp-tr pp-tr-head">
+                        <span class="pp-td pp-td-rank">الترتيب</span>
+                        <span class="pp-td pp-td-player">المتسابق</span>
+                        <span class="pp-td pp-td-score">توقعه</span>
+                        <span class="pp-td pp-td-acc">معدل الدقة</span>
+                      </div>
+                      <% preds.forEach(function(pred, idx) {
+                        var userAcc = ppAccMap[pred.user_id];
+                        var userAccLabel = userAcc != null ? userAcc + '%' : '—';
+                      %>
+                      <div class="pp-tr">
+                        <span class="pp-td pp-td-rank">
+                          <% if (idx === 0) { %><span class="pp-rank-badge pp-rank-gold">1</span>
+                          <% } else if (idx === 1) { %><span class="pp-rank-badge pp-rank-silver">2</span>
+                          <% } else if (idx === 2) { %><span class="pp-rank-badge pp-rank-bronze">3</span>
+                          <% } else { %><span class="pp-rank-num"><%= idx + 1 %></span><% } %>
+                        </span>
+                        <span class="pp-td pp-td-player">
+                          <span class="pp-player-avatar">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                          </span>
+                          <span class="pp-player-name"><%= pred.user_name || 'مستخدم' %></span>
+                        </span>
+                        <span class="pp-td pp-td-score">
+                          <span class="pp-score-pill"><%= pred.scoreA %>:<%= pred.scoreB %></span>
+                        </span>
+                        <span class="pp-td pp-td-acc">
+                          <span class="pp-acc-pill"><%= userAccLabel %></span>
+                        </span>
+                      </div>
+                      <% }); %>
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+
+          <% } %>
+
+        </div>
+        <!-- ===== END MOBILE PP ===== -->
+
+        <!-- ===== DESKTOP PP (≥861px) ===== -->
+        <div class="pp-desktop">
+          <header class="pp-topbar">
+            <div class="pp-topbar-right">
+              <h1 class="pp-topbar-title">توقعات المتسابقين 👥</h1>
+              <p class="pp-topbar-subtitle">شاهد توقعات المتسابقين الآخرين للمباريات المسموح بها</p>
+            </div>
+          </header>
+
+          <% if (matchesWithPredictions.length === 0) { %>
+            <div class="pp-empty">
+              <div class="pp-empty-icon">👀</div>
+              <div class="pp-empty-title">لا توجد توقعات متاحة</div>
+              <div class="pp-empty-text">لم يقم المدير بإظهار أي توقعات بعد.</div>
+            </div>
+          <% } else { %>
+            <% matchesWithPredictions.forEach(function(item) { %>
+              <div class="pp-match-card">
+                <div class="pp-match-header">
+                  <div class="pp-match-teams">
+                    <div class="pp-match-team">
+                      <div class="pp-match-flag"><img src="/flags/<%= teamFlags[item.match.teamA] || 'unknown' %>.png" alt="" onerror="this.src='/flags/unknown.png'"></div>
+                      <span class="pp-match-name"><%= item.match.teamA %></span>
+                    </div>
+                    <div class="pp-vs">
+                      <% if (item.match.actual_scoreA != null) { %>
+                        <span class="pp-final-score"><%= item.match.actual_scoreA %> - <%= item.match.actual_scoreB %></span>
+                      <% } else { %>VS<% } %>
+                    </div>
+                    <div class="pp-match-team">
+                      <span class="pp-match-name"><%= item.match.teamB %></span>
+                      <div class="pp-match-flag"><img src="/flags/<%= teamFlags[item.match.teamB] || 'unknown' %>.png" alt="" onerror="this.src='/flags/unknown.png'"></div>
+                    </div>
+                  </div>
+                  <div class="pp-match-meta">
+                    <span class="pp-group-badge"><%= item.match.stage %></span>
+                    <span class="pp-match-time">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <%= new Date(item.match.start_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) %>
+                    </span>
+                    <span class="pp-preds-count"><%= item.predictions.length %> توقع</span>
+                  </div>
+                </div>
+                <% if (item.predictions.length > 0) { %>
+                <div class="pp-preds-list">
+                  <% item.predictions.forEach(function(pred) { %>
+                  <div class="pp-pred-row">
+                    <div class="pp-pred-avatar pp-avatar-color-<%= (pred.user_id % 6) + 1 %>">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <span class="pp-pred-name"><%= pred.user_name %></span>
+                    <div class="pp-pred-divider"></div>
+                    <img class="pp-pred-flag" src="/flags/<%= teamFlags[item.match.teamA] || 'unknown' %>.png" alt="" onerror="this.src='/flags/unknown.png'">
+                    <span class="pp-pred-team-name"><%= item.match.teamA %></span>
+                    <div class="pp-pred-score">
+                      <span class="pp-pred-num"><%= pred.scoreA %></span>
+                      <span class="pp-pred-sep">-</span>
+                      <span class="pp-pred-num"><%= pred.scoreB %></span>
+                    </div>
+                    <span class="pp-pred-team-name"><%= item.match.teamB %></span>
+                    <img class="pp-pred-flag" src="/flags/<%= teamFlags[item.match.teamB] || 'unknown' %>.png" alt="" onerror="this.src='/flags/unknown.png'">
+                    <% if (item.match.actual_scoreA != null) { %>
+                      <div class="pp-pred-result">
+                        <% if (pred.scoreA === item.match.actual_scoreA && pred.scoreB === item.match.actual_scoreB) { %>
+                          <span class="pp-result-exact">✓</span>
+                        <% } else if ((pred.scoreA > pred.scoreB && item.match.actual_scoreA > item.match.actual_scoreB) || (pred.scoreA < pred.scoreB && item.match.actual_scoreA < item.match.actual_scoreB) || (pred.scoreA === pred.scoreB && item.match.actual_scoreA === item.match.actual_scoreB)) { %>
+                          <span class="pp-result-correct">✓</span>
+                        <% } else { %>
+                          <span class="pp-result-wrong">✗</span>
+                        <% } %>
+                      </div>
+                    <% } %>
+                  </div>
+                  <% }); %>
+                </div>
+                <% } else { %>
+                  <div class="pp-no-preds">لا توجد توقعات لهذه المباراة بعد</div>
+                <% } %>
+              </div>
+            <% }); %>
+          <% } %>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <script>
+    var ppOpenId = null;
+    function ppToggle(id) {
+      var card = document.querySelector('.pp-card[data-pp-id="' + id + '"]');
+      if (!card) return;
+      if (ppOpenId === id) {
+        card.classList.remove('pp-is-open');
+        ppOpenId = null;
+      } else {
+        if (ppOpenId) {
+          var prev = document.querySelector('.pp-card[data-pp-id="' + ppOpenId + '"]');
+          if (prev) prev.classList.remove('pp-is-open');
+        }
+        card.classList.add('pp-is-open');
+        ppOpenId = id;
+      }
+    }
+  </script>
+<%- include('partials/mobile-nav', { active: 'players-predictions' }) %>
+</body>
+</html>

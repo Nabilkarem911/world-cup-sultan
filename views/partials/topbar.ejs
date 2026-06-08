@@ -1,0 +1,12 @@
+<header class="topbar">
+  <div>
+    <p class="topbar-label">الصفحة الحالية</p>
+    <h1 class="topbar-title"><%= pageTitle %></h1>
+  </div>
+  <div class="topbar-actions">
+    <% if (user.role === 'admin') { %>
+      <a class="topbar-button" href="/dashboard">لوحة المدير</a>
+    <% } %>
+    <a class="topbar-button secondary" href="/logout">تسجيل خروج</a>
+  </div>
+</header>
