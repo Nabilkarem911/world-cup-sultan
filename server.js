@@ -32,6 +32,9 @@ const newsUpload = multer({
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - required when running behind reverse proxy (Dokploy, Nginx, etc.)
+app.set('trust proxy', 1);
+
 // ===== Security & Performance =====
 app.use(helmet({
   contentSecurityPolicy: false,
