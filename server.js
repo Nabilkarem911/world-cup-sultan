@@ -42,13 +42,14 @@ app.use(helmet({
 }));
 app.use(compression());
 
-// Rate limit عام للموقع — 200 طلب لكل IP في 15 دقيقة
+// Rate limit عام للموقع — 200 طلب لكل IP في 15 دقيقة (أو 10000 في dev)
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: process.env.NODE_ENV === 'production' ? 200 : 10000,
   message: 'طلبات كثيرة جداً، حاول بعد 15 دقيقة',
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' || req.ip?.startsWith('192.168.') || req.ip?.startsWith('10.')
 });
 app.use(generalLimiter);
 
