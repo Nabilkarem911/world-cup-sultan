@@ -60,7 +60,7 @@
               </div>
               <div class="hm2-stat-num"><%= userRank || 0 %></div>
               <div class="hm2-stat-label">ترتيبك الآن</div>
-              <div class="hm2-stat-sublabel">between all players</div>
+              <div class="hm2-stat-sublabel">من بين جميع المتسابقين</div>
             </div>
             <div class="hm2-stat-card">
               <div class="hm2-stat-icon hm2-stat-purple">
@@ -96,19 +96,19 @@
             <% if (upcomingMatches && upcomingMatches.length > 0) { %>
             <% var nextMatch = upcomingMatches[0]; %>
             <div class="hm2-match-card">
-              <div class="hm2-match-badge"><%= nextMatch.group || 'المجموعة A' %> - <%= nextMatch.stage || 'الجولة 1' %></div>
+              <div class="hm2-match-badge"><%= nextMatch.group || '' %> - <%= nextMatch.stage || '' %></div>
               <div class="hm2-match-teams">
                 <div class="hm2-match-team">
-                  <img src="/flags/<%= teamFlags[nextMatch.teamB] || 'south-africa' %>.png" alt="<%= nextMatch.teamB %>" class="hm2-match-flag" onerror="this.src='/flags/unknown.png'">
+                  <img src="/flags/<%= teamFlags[nextMatch.teamB] || 'unknown' %>.png" alt="<%= nextMatch.teamB %>" class="hm2-match-flag" onerror="this.src='/flags/unknown.png'">
                   <span class="hm2-match-name"><%= nextMatch.teamB %></span>
                 </div>
                 <div class="hm2-match-info">
                   <div class="hm2-match-date"><%= new Date(nextMatch.start_at).toLocaleDateString('ar-SA',{weekday:'long'}) %></div>
                   <div class="hm2-match-time"><%= new Date(nextMatch.start_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}) %></div>
-                  <div class="hm2-match-stadium"><%= nextMatch.stadium || 'ملعب أزتيكا، المكسيك' %></div>
+                  <div class="hm2-match-stadium"><%= nextMatch.stadium || '' %></div>
                 </div>
                 <div class="hm2-match-team">
-                  <img src="/flags/<%= teamFlags[nextMatch.teamA] || 'mexico' %>.png" alt="<%= nextMatch.teamA %>" class="hm2-match-flag" onerror="this.src='/flags/unknown.png'">
+                  <img src="/flags/<%= teamFlags[nextMatch.teamA] || 'unknown' %>.png" alt="<%= nextMatch.teamA %>" class="hm2-match-flag" onerror="this.src='/flags/unknown.png'">
                   <span class="hm2-match-name"><%= nextMatch.teamA %></span>
                 </div>
               </div>
