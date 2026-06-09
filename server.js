@@ -105,7 +105,7 @@ const navItems = [
   { id: 'players-predictions', label: 'توقعات المتسابقين', url: '/players-predictions', icon: 'users' },
   { id: 'leaderboard', label: 'الترتيب', url: '/leaderboard', icon: 'trophy' },
   { id: 'rules', label: 'نظام المسابقة', url: '/rules', icon: 'rules' },
-  { id: 'news', label: 'الأخبار', url: '/news', icon: 'news' },
+  { id: 'news', label: 'أخبار كأس العالم', url: '/news', icon: 'news' },
   { id: 'dashboard', label: 'لوحة التحكم', url: '/dashboard', icon: 'dashboard', adminOnly: true }
 ];
 
@@ -262,7 +262,8 @@ app.get('/home', requireAuth, async (req, res) => {
     const gapToFifth = fifthEntry && userEntry ? Math.max(0, fifthEntry.total - userEntry.total) : 0;
     const teamFlags = await db.getTeamFlags();
     const newsItems = await db.getNews();
-    res.render('home', { user: req.user, matches: predictionsWithLock, upcomingMatches, leaderboard, predictionsCount, correctPredictions, lockedWithoutPrediction, userRank, userPoints, userEntry, top3, allMatchesCount, lastMatch, gapToFifth, teamFlags, newsItems });
+    const lastPrediction = await db.getLastPrediction(req.user.id);
+    res.render('home', { user: req.user, matches: predictionsWithLock, upcomingMatches, leaderboard, predictionsCount, correctPredictions, lockedWithoutPrediction, userRank, userPoints, userEntry, top3, allMatchesCount, lastMatch, lastPrediction, gapToFifth, teamFlags, newsItems });
   } catch (err) {
     console.error('Home error:', err);
     res.status(500).render('error', { message: 'حدث خطأ في تحميل الصفحة' });
@@ -634,6 +635,45 @@ app.post('/matches/:id/result', requireAuth, requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('Update result error:', err);
     res.redirect('/dashboard?tab=results');
+  }
+});
+
+// ===== Admin Change Password =====
+app.post('/admin/change-password', requireAuth, requireAdmin, adminLimiter, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).render('error', { message: 'جميع الحقول مطلوبة' });
+    }
+    
+    if (newPassword !== confirmPassword) {
+      return res.status(400).render('error', { message: 'كلمتا المرور الجديدة غير متطابقتين' });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(400).render('error', { message: 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل' });
+    }
+    
+    // Verify current password
+    const user = await db.getUserById(req.user.id);
+    if (!user) {
+      return res.status(404).render('error', { message: 'المستخدم غير موجود' });
+    }
+    
+    const validPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validPassword) {
+      return res.status(400).render('error', { message: 'كلمة المرور الحالية غير صحيحة' });
+    }
+    
+    // Hash new password and update
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.updateUserPassword(req.user.id, hashedPassword);
+    
+    res.redirect('/dashboard?tab=settings');
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).render('error', { message: 'حدث خطأ أثناء تغيير كلمة المرور' });
   }
 });
 

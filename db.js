@@ -312,6 +312,10 @@ async function getUserById(id) {
   return result.rows[0] || null;
 }
 
+async function updateUserPassword(id, hashedPassword) {
+  await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashedPassword, id]);
+}
+
 async function createUser(name, username, password) {
   const hash = bcrypt.hashSync(password, 10);
   const result = await pool.query(
@@ -466,6 +470,19 @@ async function getUserPredictions(userId) {
     ORDER BY m.start_at ASC
   `, [userId]);
   return result.rows.map(normalizePrediction);
+}
+
+async function getLastPrediction(userId) {
+  const result = await pool.query(`
+    SELECT p.*, m.teamA, m.teamB, m.stage, m.start_at, m.round, m.actual_scoreA, m.actual_scoreB,
+           COALESCE(p.points, 0) as points
+    FROM predictions p
+    JOIN matches m ON p.match_id = m.id
+    WHERE p.user_id = $1
+    ORDER BY p.updated_at DESC
+    LIMIT 1
+  `, [userId]);
+  return result.rows[0] || null;
 }
 
 async function updateKnockoutTeams(matchId, teamA, teamB) {
@@ -781,6 +798,7 @@ module.exports = {
   init,
   findUserByUsername,
   getUserById,
+  updateUserPassword,
   createUser,
   getPendingUsers,
   getAllUsers,
@@ -800,6 +818,7 @@ module.exports = {
   savePrediction,
   getPrediction,
   getUserPredictions,
+  getLastPrediction,
   updateKnockoutTeams,
   updateMatchResult,
   getLeaderboard,
