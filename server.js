@@ -42,14 +42,22 @@ app.use(helmet({
 }));
 app.use(compression());
 
-// Rate limit عام للموقع — 200 طلب لكل IP في 15 دقيقة (أو 10000 في dev)
+// Rate limit عام للموقع — 2000 طلب لكل IP في 15 دقيقة (أو 10000 في dev)
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'production' ? 200 : 10000,
+  max: process.env.NODE_ENV === 'production' ? 2000 : 10000,
   message: 'طلبات كثيرة جداً، حاول بعد 15 دقيقة',
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1' || req.ip?.startsWith('192.168.') || req.ip?.startsWith('10.')
+  keyGenerator: (req) => {
+    // Use X-Forwarded-For header when behind proxy (Render, etc.)
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+      const ips = forwarded.split(',').map(ip => ip.trim());
+      return ips[0] || req.ip;
+    }
+    return req.ip;
+  }
 });
 app.use(generalLimiter);
 
@@ -60,6 +68,14 @@ const authLimiter = rateLimit({
   message: 'طلبات كثيرة جداً، حاول بعد 15 دقيقة',
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+      const ips = forwarded.split(',').map(ip => ip.trim());
+      return ips[0] || req.ip;
+    }
+    return req.ip;
+  }
 });
 
 // Rate limiting للإدارة — 50 طلب لكل 15 دقيقة
@@ -69,6 +85,14 @@ const adminLimiter = rateLimit({
   message: 'طلبات كثيرة جداً، حاول بعد 15 دقيقة',
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+      const ips = forwarded.split(',').map(ip => ip.trim());
+      return ips[0] || req.ip;
+    }
+    return req.ip;
+  }
 });
 
 // ===== View Engine =====
