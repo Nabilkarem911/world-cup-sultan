@@ -494,11 +494,14 @@
                     <% if (match.actual_scoreA !== null) { %>
                       <span class="db-result-actual"><%= match.actual_scoreA %> - <%= match.actual_scoreB %></span>
                     <% } %>
-                    <form method="POST" action="/matches/<%= match.id %>/result" class="db-result-form">
+                    <form method="POST" action="/matches/<%= match.id %>/result" class="db-result-form" id="res-form-<%= match.id %>">
                       <input type="number" name="scoreA" min="0" max="99" value="<%= match.actual_scoreA !== null ? match.actual_scoreA : '' %>" placeholder="0" class="score-input" style="width:48px;">
                       <span>-</span>
                       <input type="number" name="scoreB" min="0" max="99" value="<%= match.actual_scoreB !== null ? match.actual_scoreB : '' %>" placeholder="0" class="score-input" style="width:48px;">
                       <button type="submit" class="btn-save">حفظ</button>
+                      <% if (match.actual_scoreA !== null) { %>
+                      <button type="button" class="btn-clear" onclick="clearResult('<%= match.id %>')" title="مسح النتيجة">مسح</button>
+                      <% } %>
                     </form>
                   </div>
                   <% }) %>
@@ -835,6 +838,14 @@
     }
 
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePredModal(); });
+
+    function clearResult(matchId) {
+      var form = document.getElementById('res-form-' + matchId);
+      if (!form) return;
+      form.querySelector('[name="scoreA"]').value = '';
+      form.querySelector('[name="scoreB"]').value = '';
+      form.submit();
+    }
   </script>
 
 <%- include('partials/mobile-nav', { active: 'dashboard' }) %>

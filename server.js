@@ -642,6 +642,16 @@ app.post('/matches/:id/result', requireAuth, requireAdmin, async (req, res) => {
     const { scoreA, scoreB } = req.body;
     const match = await db.getMatchById(id);
     if (!match) return res.redirect('/dashboard?tab=results');
+    
+    // لو فاضيين لكلاهما → مسح النتيجة
+    const isEmpty = (v) => v === '' || v === undefined || v === null;
+    if (isEmpty(scoreA) && isEmpty(scoreB)) {
+      await db.updateMatchResult(match.id, null, null);
+      await db.calculateGroupStandings();
+      await db.advanceKnockoutTeams();
+      return res.redirect('/dashboard?tab=results');
+    }
+    
     const a = parseInt(scoreA, 10);
     const b = parseInt(scoreB, 10);
     if (Number.isNaN(a) || Number.isNaN(b)) return res.redirect('/dashboard?tab=results');

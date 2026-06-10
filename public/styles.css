@@ -2127,6 +2127,19 @@ footer {
 .btn-save:hover {
   background: #1248cc;
 }
+.btn-clear {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.btn-clear:hover {
+  background: #dc2626;
+}
 
 /* ============================================================
    PREMIUM SCHEDULE PAGE - FIFA World Cup 2026
@@ -6071,14 +6084,16 @@ footer {
 
   /* ===== Tabs ===== */
   .mp-tabs {
-    display: flex; margin: 20px 20px 0; gap: 4px;
-    padding: 4px; border-radius: 14px;
+    display: flex; margin: 20px 12px 0; gap: 3px;
+    padding: 3px; border-radius: 14px;
     background: var(--mp-card); border: 1px solid var(--mp-border);
   }
   .mp-tab {
-    flex: 1; height: 40px; border: none; border-radius: 10px;
-    background: transparent; color: var(--mp-muted); font-size: 13px;
+    flex: 1; height: 38px; border: none; border-radius: 10px;
+    background: transparent; color: var(--mp-muted); font-size: 11px;
     font-weight: 700; cursor: pointer; transition: all 0.2s;
+    white-space: nowrap; padding: 0 4px;
+    display: flex; align-items: center; justify-content: center;
   }
   .mp-tab.active {
     background: var(--mp-navy); color: #fff;
