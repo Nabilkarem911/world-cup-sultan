@@ -23,150 +23,198 @@ const GROUPS = {
 };
 
 function generateFixtures() {
-  const baseTime = new Date('2026-06-11T19:00:00Z').getTime();
-  const HOUR = 3600000;
-  const DAY = 24 * HOUR;
-
-  const round1Start = baseTime;
-  const round2Start = baseTime + 11 * DAY;
-  const round3Start = baseTime + 22 * DAY;
-
-  // توزيع المباريات على 4 أيام لكل جولة (3 مجموعات في اليوم)
-  // كل مجموعة لها مباراتين: الأولى في 19:00، الثانية في 22:00
-  const GROUPS_PER_DAY = 3;
-  const SLOTS = [19 * HOUR, 22 * HOUR]; // 7PM و 10PM
-
-  const groupNames = Object.keys(GROUPS);
+  // جدول كأس العالم 2026 الرسمي — كل التواريخ والأوقات بتوقيت ET محوّل لـ UTC (+4 ساعات)
+  // المصدر: ESPN / FIFA الرسمي
   const fixtures = [];
 
-  // Round 1: كل يوم 3 مجموعات، كل مجموعة مباراتين
-  for (let g = 0; g < 12; g++) {
-    const teams = GROUPS[groupNames[g]];
-    const dayIndex = Math.floor(g / GROUPS_PER_DAY);
-    const groupInDay = g % GROUPS_PER_DAY;
-    const dayOffset = dayIndex * DAY;
+  // ============================
+  // الجولة الأولى (Round 1)
+  // ============================
 
-    // مباراة 1 (فريق 1 vs فريق 2) في 19:00
-    fixtures.push({
-      teamA: teams[0],
-      teamB: teams[1],
-      stage: groupNames[g],
-      round: 1,
-      start: new Date(round1Start + dayOffset + SLOTS[0] + groupInDay * 0.5 * HOUR).toISOString()
-    });
-    // مباراة 2 (فريق 3 vs فريق 4) في 22:00
-    fixtures.push({
-      teamA: teams[2],
-      teamB: teams[3],
-      stage: groupNames[g],
-      round: 1,
-      start: new Date(round1Start + dayOffset + SLOTS[1] + groupInDay * 0.5 * HOUR).toISOString()
-    });
-  }
+  // يوم 11 يونيو (الخميس)
+  fixtures.push({ teamA: 'المكسيك', teamB: 'جنوب أفريقيا', stage: 'المجموعة A', round: 1, start: '2026-06-11T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'كوريا الجنوبية', teamB: 'التشيك', stage: 'المجموعة A', round: 1, start: '2026-06-12T02:00:00Z' }); // 10pm ET
 
-  // Round 2
-  for (let g = 0; g < 12; g++) {
-    const teams = GROUPS[groupNames[g]];
-    const dayIndex = Math.floor(g / GROUPS_PER_DAY);
-    const groupInDay = g % GROUPS_PER_DAY;
-    const dayOffset = dayIndex * DAY;
+  // يوم 12 يونيو (الجمعة)
+  fixtures.push({ teamA: 'كندا', teamB: 'البوسنة والهرسك', stage: 'المجموعة B', round: 1, start: '2026-06-12T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'الولايات المتحدة', teamB: 'باراغواي', stage: 'المجموعة D', round: 1, start: '2026-06-13T01:00:00Z' }); // 9pm ET
 
-    fixtures.push({
-      teamA: teams[0],
-      teamB: teams[2],
-      stage: groupNames[g],
-      round: 2,
-      start: new Date(round2Start + dayOffset + SLOTS[0] + groupInDay * 0.5 * HOUR).toISOString()
-    });
-    fixtures.push({
-      teamA: teams[1],
-      teamB: teams[3],
-      stage: groupNames[g],
-      round: 2,
-      start: new Date(round2Start + dayOffset + SLOTS[1] + groupInDay * 0.5 * HOUR).toISOString()
-    });
-  }
+  // يوم 13 يونيو (السبت)
+  fixtures.push({ teamA: 'قطر', teamB: 'سويسرا', stage: 'المجموعة B', round: 1, start: '2026-06-13T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'البرازيل', teamB: 'المغرب', stage: 'المجموعة C', round: 1, start: '2026-06-13T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'هايتي', teamB: 'إسكتلندا', stage: 'المجموعة C', round: 1, start: '2026-06-14T01:00:00Z' }); // 9pm ET
+  fixtures.push({ teamA: 'أستراليا', teamB: 'تركيا', stage: 'المجموعة D', round: 1, start: '2026-06-14T04:00:00Z' }); // 12am ET (June 14)
 
-  // Round 3
-  for (let g = 0; g < 12; g++) {
-    const teams = GROUPS[groupNames[g]];
-    const dayIndex = Math.floor(g / GROUPS_PER_DAY);
-    const groupInDay = g % GROUPS_PER_DAY;
-    const dayOffset = dayIndex * DAY;
+  // يوم 14 يونيو (الأحد)
+  fixtures.push({ teamA: 'ألمانيا', teamB: 'كوراساو', stage: 'المجموعة E', round: 1, start: '2026-06-14T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'هولندا', teamB: 'اليابان', stage: 'المجموعة F', round: 1, start: '2026-06-14T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'ساحل العاج', teamB: 'الإكوادور', stage: 'المجموعة E', round: 1, start: '2026-06-14T23:00:00Z' }); // 7pm ET
+  fixtures.push({ teamA: 'السويد', teamB: 'تونس', stage: 'المجموعة F', round: 1, start: '2026-06-15T02:00:00Z' }); // 10pm ET
 
-    fixtures.push({
-      teamA: teams[0],
-      teamB: teams[3],
-      stage: groupNames[g],
-      round: 3,
-      start: new Date(round3Start + dayOffset + SLOTS[0] + groupInDay * 0.5 * HOUR).toISOString()
-    });
-    fixtures.push({
-      teamA: teams[1],
-      teamB: teams[2],
-      stage: groupNames[g],
-      round: 3,
-      start: new Date(round3Start + dayOffset + SLOTS[1] + groupInDay * 0.5 * HOUR).toISOString()
-    });
-  }
+  // يوم 15 يونيو (الإثنين)
+  fixtures.push({ teamA: 'إسبانيا', teamB: 'الرأس الأخضر', stage: 'المجموعة H', round: 1, start: '2026-06-15T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'بلجيكا', teamB: 'مصر', stage: 'المجموعة G', round: 1, start: '2026-06-15T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'السعودية', teamB: 'الأوروغواي', stage: 'المجموعة H', round: 1, start: '2026-06-15T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'إيران', teamB: 'نيوزيلندا', stage: 'المجموعة G', round: 1, start: '2026-06-16T04:00:00Z' }); // 12am ET (June 16)
 
-  // Round 4 — دور الـ 32 (32 مباراة)
-  const round4Start = baseTime + 33 * DAY;
-  for (let i = 1; i <= 32; i++) {
-    fixtures.push({
-      teamA: `الفريق ${i*2-1}`,
-      teamB: `الفريق ${i*2}`,
-      stage: 'دور الـ 32',
-      round: 4,
-      start: new Date(round4Start + Math.floor((i-1)/4) * DAY + SLOTS[(i-1)%2]).toISOString()
-    });
-  }
+  // يوم 16 يونيو (الثلاثاء)
+  fixtures.push({ teamA: 'فرنسا', teamB: 'السنغال', stage: 'المجموعة I', round: 1, start: '2026-06-16T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'العراق', teamB: 'النرويج', stage: 'المجموعة I', round: 1, start: '2026-06-16T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'الأرجنتين', teamB: 'الجزائر', stage: 'المجموعة J', round: 1, start: '2026-06-17T01:00:00Z' }); // 9pm ET
+  fixtures.push({ teamA: 'النمسا', teamB: 'الأردن', stage: 'المجموعة J', round: 1, start: '2026-06-17T04:00:00Z' }); // 12am ET (June 17)
 
-  // Round 5 — دور الـ 16 (16 مباراة)
-  const round5Start = baseTime + 40 * DAY;
-  for (let i = 1; i <= 16; i++) {
-    fixtures.push({
-      teamA: `الفائز م${i*2-1}`,
-      teamB: `الفائز م${i*2}`,
-      stage: 'دور الـ 16',
-      round: 5,
-      start: new Date(round5Start + Math.floor((i-1)/4) * DAY + SLOTS[(i-1)%2]).toISOString()
-    });
-  }
+  // يوم 17 يونيو (الأربعاء)
+  fixtures.push({ teamA: 'البرتغال', teamB: 'الكونغو الديمقراطية', stage: 'المجموعة K', round: 1, start: '2026-06-17T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'إنجلترا', teamB: 'كرواتيا', stage: 'المجموعة L', round: 1, start: '2026-06-17T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'غانا', teamB: 'بنما', stage: 'المجموعة L', round: 1, start: '2026-06-17T23:00:00Z' }); // 7pm ET
+  fixtures.push({ teamA: 'أوزبكستان', teamB: 'كولومبيا', stage: 'المجموعة K', round: 1, start: '2026-06-18T02:00:00Z' }); // 10pm ET
 
-  // Round 6 — دور الـ 8 (8 مباريات)
-  const round6Start = baseTime + 47 * DAY;
-  for (let i = 1; i <= 8; i++) {
-    fixtures.push({
-      teamA: `الفائز م${i*2-1}`,
-      teamB: `الفائز م${i*2}`,
-      stage: 'دور الـ 8',
-      round: 6,
-      start: new Date(round6Start + Math.floor((i-1)/2) * DAY + SLOTS[(i-1)%2]).toISOString()
-    });
-  }
+  // ============================
+  // الجولة الثانية (Round 2)
+  // ============================
 
-  // Round 7 — دور الـ 4 (4 مباريات)
-  const round7Start = baseTime + 52 * DAY;
-  for (let i = 1; i <= 4; i++) {
-    fixtures.push({
-      teamA: `الفائز م${i*2-1}`,
-      teamB: `الفائز م${i*2}`,
-      stage: 'دور الـ 4',
-      round: 7,
-      start: new Date(round7Start + Math.floor((i-1)/2) * DAY + SLOTS[(i-1)%2]).toISOString()
-    });
-  }
+  // يوم 18 يونيو (الخميس)
+  fixtures.push({ teamA: 'التشيك', teamB: 'جنوب أفريقيا', stage: 'المجموعة A', round: 2, start: '2026-06-18T16:00:00Z' }); // 12pm ET
+  fixtures.push({ teamA: 'سويسرا', teamB: 'البوسنة والهرسك', stage: 'المجموعة B', round: 2, start: '2026-06-18T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'كندا', teamB: 'قطر', stage: 'المجموعة B', round: 2, start: '2026-06-18T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'المكسيك', teamB: 'كوريا الجنوبية', stage: 'المجموعة A', round: 2, start: '2026-06-19T03:00:00Z' }); // 11pm ET
 
-  // Round 8 — النهائي (مباراة واحدة)
-  const round8Start = baseTime + 57 * DAY;
-  fixtures.push({
-    teamA: 'الفائز نصف النهائي 1',
-    teamB: 'الفائز نصف النهائي 2',
-    stage: 'النهائي',
-    round: 8,
-    start: new Date(round8Start + 19 * HOUR).toISOString()
-  });
+  // يوم 19 يونيو (الجمعة)
+  fixtures.push({ teamA: 'الولايات المتحدة', teamB: 'أستراليا', stage: 'المجموعة D', round: 2, start: '2026-06-19T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'إسكتلندا', teamB: 'المغرب', stage: 'المجموعة C', round: 2, start: '2026-06-19T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'البرازيل', teamB: 'هايتي', stage: 'المجموعة C', round: 2, start: '2026-06-20T01:00:00Z' }); // 9pm ET
+  fixtures.push({ teamA: 'تركيا', teamB: 'باراغواي', stage: 'المجموعة D', round: 2, start: '2026-06-20T04:00:00Z' }); // 12am ET (June 20)
+
+  // يوم 20 يونيو (السبت)
+  fixtures.push({ teamA: 'هولندا', teamB: 'السويد', stage: 'المجموعة F', round: 2, start: '2026-06-20T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'ألمانيا', teamB: 'ساحل العاج', stage: 'المجموعة E', round: 2, start: '2026-06-20T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'الإكوادور', teamB: 'كوراساو', stage: 'المجموعة E', round: 2, start: '2026-06-21T00:00:00Z' }); // 8pm ET
+  fixtures.push({ teamA: 'تونس', teamB: 'اليابان', stage: 'المجموعة F', round: 2, start: '2026-06-21T04:00:00Z' }); // 12am ET (June 21)
+
+  // يوم 21 يونيو (الأحد)
+  fixtures.push({ teamA: 'إسبانيا', teamB: 'السعودية', stage: 'المجموعة H', round: 2, start: '2026-06-21T16:00:00Z' }); // 12pm ET
+  fixtures.push({ teamA: 'بلجيكا', teamB: 'إيران', stage: 'المجموعة G', round: 2, start: '2026-06-21T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'الأوروغواي', teamB: 'الرأس الأخضر', stage: 'المجموعة H', round: 2, start: '2026-06-21T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'نيوزيلندا', teamB: 'مصر', stage: 'المجموعة G', round: 2, start: '2026-06-22T01:00:00Z' }); // 9pm ET
+
+  // يوم 22 يونيو (الإثنين)
+  fixtures.push({ teamA: 'الأرجنتين', teamB: 'النمسا', stage: 'المجموعة J', round: 2, start: '2026-06-22T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'فرنسا', teamB: 'العراق', stage: 'المجموعة I', round: 2, start: '2026-06-22T21:00:00Z' }); // 5pm ET
+  fixtures.push({ teamA: 'النرويج', teamB: 'السنغال', stage: 'المجموعة I', round: 2, start: '2026-06-23T00:00:00Z' }); // 8pm ET
+  fixtures.push({ teamA: 'الأردن', teamB: 'الجزائر', stage: 'المجموعة J', round: 2, start: '2026-06-23T03:00:00Z' }); // 11pm ET
+
+  // يوم 23 يونيو (الثلاثاء)
+  fixtures.push({ teamA: 'البرتغال', teamB: 'أوزبكستان', stage: 'المجموعة K', round: 2, start: '2026-06-23T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'إنجلترا', teamB: 'غانا', stage: 'المجموعة L', round: 2, start: '2026-06-23T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'بنما', teamB: 'كرواتيا', stage: 'المجموعة L', round: 2, start: '2026-06-23T23:00:00Z' }); // 7pm ET
+  fixtures.push({ teamA: 'كولومبيا', teamB: 'الكونغو الديمقراطية', stage: 'المجموعة K', round: 2, start: '2026-06-24T02:00:00Z' }); // 10pm ET
+
+  // ============================
+  // الجولة الثالثة (Round 3)
+  // ============================
+
+  // يوم 24 يونيو (الأربعاء)
+  fixtures.push({ teamA: 'سويسرا', teamB: 'كندا', stage: 'المجموعة B', round: 3, start: '2026-06-24T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'البوسنة والهرسك', teamB: 'قطر', stage: 'المجموعة B', round: 3, start: '2026-06-24T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'إسكتلندا', teamB: 'البرازيل', stage: 'المجموعة C', round: 3, start: '2026-06-24T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'المغرب', teamB: 'هايتي', stage: 'المجموعة C', round: 3, start: '2026-06-24T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'التشيك', teamB: 'المكسيك', stage: 'المجموعة A', round: 3, start: '2026-06-25T01:00:00Z' }); // 9pm ET
+  fixtures.push({ teamA: 'جنوب أفريقيا', teamB: 'كوريا الجنوبية', stage: 'المجموعة A', round: 3, start: '2026-06-25T01:00:00Z' }); // 9pm ET
+
+  // يوم 25 يونيو (الخميس)
+  fixtures.push({ teamA: 'الإكوادور', teamB: 'ألمانيا', stage: 'المجموعة E', round: 3, start: '2026-06-25T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'كوراساو', teamB: 'ساحل العاج', stage: 'المجموعة E', round: 3, start: '2026-06-25T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'اليابان', teamB: 'السويد', stage: 'المجموعة F', round: 3, start: '2026-06-25T23:00:00Z' }); // 7pm ET
+  fixtures.push({ teamA: 'تونس', teamB: 'هولندا', stage: 'المجموعة F', round: 3, start: '2026-06-25T23:00:00Z' }); // 7pm ET
+  fixtures.push({ teamA: 'تركيا', teamB: 'الولايات المتحدة', stage: 'المجموعة D', round: 3, start: '2026-06-26T02:00:00Z' }); // 10pm ET
+  fixtures.push({ teamA: 'باراغواي', teamB: 'أستراليا', stage: 'المجموعة D', round: 3, start: '2026-06-26T02:00:00Z' }); // 10pm ET
+
+  // يوم 26 يونيو (الجمعة)
+  fixtures.push({ teamA: 'النرويج', teamB: 'فرنسا', stage: 'المجموعة I', round: 3, start: '2026-06-26T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'السنغال', teamB: 'العراق', stage: 'المجموعة I', round: 3, start: '2026-06-26T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'الرأس الأخضر', teamB: 'السعودية', stage: 'المجموعة H', round: 3, start: '2026-06-27T00:00:00Z' }); // 8pm ET
+  fixtures.push({ teamA: 'الأوروغواي', teamB: 'إسبانيا', stage: 'المجموعة H', round: 3, start: '2026-06-27T00:00:00Z' }); // 8pm ET
+  fixtures.push({ teamA: 'مصر', teamB: 'إيران', stage: 'المجموعة G', round: 3, start: '2026-06-27T03:00:00Z' }); // 11pm ET
+  fixtures.push({ teamA: 'نيوزيلندا', teamB: 'بلجيكا', stage: 'المجموعة G', round: 3, start: '2026-06-27T03:00:00Z' }); // 11pm ET
+
+  // يوم 27 يونيو (السبت)
+  fixtures.push({ teamA: 'بنما', teamB: 'إنجلترا', stage: 'المجموعة L', round: 3, start: '2026-06-27T21:00:00Z' }); // 5pm ET
+  fixtures.push({ teamA: 'كرواتيا', teamB: 'غانا', stage: 'المجموعة L', round: 3, start: '2026-06-27T21:00:00Z' }); // 5pm ET
+  fixtures.push({ teamA: 'كولومبيا', teamB: 'البرتغال', stage: 'المجموعة K', round: 3, start: '2026-06-27T23:30:00Z' }); // 7:30pm ET
+  fixtures.push({ teamA: 'الكونغو الديمقراطية', teamB: 'أوزبكستان', stage: 'المجموعة K', round: 3, start: '2026-06-27T23:30:00Z' }); // 7:30pm ET
+  fixtures.push({ teamA: 'الجزائر', teamB: 'النمسا', stage: 'المجموعة J', round: 3, start: '2026-06-28T02:00:00Z' }); // 10pm ET
+  fixtures.push({ teamA: 'الأردن', teamB: 'الأرجنتين', stage: 'المجموعة J', round: 3, start: '2026-06-28T02:00:00Z' }); // 10pm ET
+
+  // ============================
+  // دور الـ 32 (Round 4) — 16 مباراة
+  // ============================
+
+  // يوم 28 يونيو (الأحد)
+  fixtures.push({ teamA: 'ثاني A', teamB: 'ثاني B', stage: 'دور الـ 32', round: 4, start: '2026-06-28T19:00:00Z' }); // 3pm ET
+
+  // يوم 29 يونيو (الإثنين)
+  fixtures.push({ teamA: 'أول C', teamB: 'ثاني F', stage: 'دور الـ 32', round: 4, start: '2026-06-29T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'أول E', teamB: 'ثالث ABCDF', stage: 'دور الـ 32', round: 4, start: '2026-06-29T20:30:00Z' }); // 4:30pm ET
+  fixtures.push({ teamA: 'أول F', teamB: 'ثاني C', stage: 'دور الـ 32', round: 4, start: '2026-06-30T01:00:00Z' }); // 9pm ET
+
+  // يوم 30 يونيو (الثلاثاء)
+  fixtures.push({ teamA: 'ثاني E', teamB: 'ثاني I', stage: 'دور الـ 32', round: 4, start: '2026-06-30T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'أول I', teamB: 'ثالث CDFGH', stage: 'دور الـ 32', round: 4, start: '2026-06-30T21:00:00Z' }); // 5pm ET
+  fixtures.push({ teamA: 'أول A', teamB: 'ثالث CEFHI', stage: 'دور الـ 32', round: 4, start: '2026-07-01T01:00:00Z' }); // 9pm ET
+
+  // يوم 1 يوليو (الأربعاء)
+  fixtures.push({ teamA: 'أول L', teamB: 'ثالث EHIJK', stage: 'دور الـ 32', round: 4, start: '2026-07-01T16:00:00Z' }); // 12pm ET
+  fixtures.push({ teamA: 'أول G', teamB: 'ثالث AEHIJ', stage: 'دور الـ 32', round: 4, start: '2026-07-01T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'أول D', teamB: 'ثالث BEFIJ', stage: 'دور الـ 32', round: 4, start: '2026-07-02T00:00:00Z' }); // 8pm ET
+
+  // يوم 2 يوليو (الخميس)
+  fixtures.push({ teamA: 'أول H', teamB: 'ثاني J', stage: 'دور الـ 32', round: 4, start: '2026-07-02T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'ثاني K', teamB: 'ثاني L', stage: 'دور الـ 32', round: 4, start: '2026-07-02T23:00:00Z' }); // 7pm ET
+  fixtures.push({ teamA: 'أول B', teamB: 'ثالث EFGIJ', stage: 'دور الـ 32', round: 4, start: '2026-07-03T03:00:00Z' }); // 11pm ET
+
+  // يوم 3 يوليو (الجمعة)
+  fixtures.push({ teamA: 'ثاني D', teamB: 'ثاني G', stage: 'دور الـ 32', round: 4, start: '2026-07-03T18:00:00Z' }); // 2pm ET
+  fixtures.push({ teamA: 'أول J', teamB: 'ثاني H', stage: 'دور الـ 32', round: 4, start: '2026-07-03T22:00:00Z' }); // 6pm ET
+  fixtures.push({ teamA: 'أول K', teamB: 'ثالث DEIJL', stage: 'دور الـ 32', round: 4, start: '2026-07-04T01:30:00Z' }); // 9:30pm ET
+
+  // ============================
+  // دور الـ 16 (Round 5) — 8 مباريات
+  // ============================
+
+  // يوم 4 يوليو (السبت)
+  fixtures.push({ teamA: 'فائز م49', teamB: 'فائز م50', stage: 'دور الـ 16', round: 5, start: '2026-07-04T17:00:00Z' }); // 1pm ET
+  fixtures.push({ teamA: 'فائز م53', teamB: 'فائز م54', stage: 'دور الـ 16', round: 5, start: '2026-07-04T21:00:00Z' }); // 5pm ET
+
+  // يوم 5 يوليو (الأحد)
+  fixtures.push({ teamA: 'فائز م51', teamB: 'فائز م52', stage: 'دور الـ 16', round: 5, start: '2026-07-05T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'فائز م55', teamB: 'فائز م56', stage: 'دور الـ 16', round: 5, start: '2026-07-06T00:00:00Z' }); // 8pm ET
+
+  // يوم 6 يوليو (الإثنين)
+  fixtures.push({ teamA: 'فائز م57', teamB: 'فائز م58', stage: 'دور الـ 16', round: 5, start: '2026-07-06T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'فائز م59', teamB: 'فائز م60', stage: 'دور الـ 16', round: 5, start: '2026-07-06T21:00:00Z' }); // 5pm ET
+
+  // يوم 7 يوليو (الثلاثاء)
+  fixtures.push({ teamA: 'فائز م61', teamB: 'فائز م62', stage: 'دور الـ 16', round: 5, start: '2026-07-07T16:00:00Z' }); // 12pm ET
+  fixtures.push({ teamA: 'فائز م63', teamB: 'فائز م64', stage: 'دور الـ 16', round: 5, start: '2026-07-07T20:00:00Z' }); // 4pm ET
+
+  // ============================
+  // ربع النهائي (Round 6) — 4 مباريات
+  // ============================
+  fixtures.push({ teamA: 'فائز ثمن 1', teamB: 'فائز ثمن 2', stage: 'ربع النهائي', round: 6, start: '2026-07-09T20:00:00Z' }); // 4pm ET
+  fixtures.push({ teamA: 'فائز ثمن 3', teamB: 'فائز ثمن 4', stage: 'ربع النهائي', round: 6, start: '2026-07-10T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'فائز ثمن 5', teamB: 'فائز ثمن 6', stage: 'ربع النهائي', round: 6, start: '2026-07-11T21:00:00Z' }); // 5pm ET
+  fixtures.push({ teamA: 'فائز ثمن 7', teamB: 'فائز ثمن 8', stage: 'ربع النهائي', round: 6, start: '2026-07-12T01:00:00Z' }); // 9pm ET
+
+  // ============================
+  // نصف النهائي (Round 7) — 2 مباراتين
+  // ============================
+  fixtures.push({ teamA: 'فائز ربع 1', teamB: 'فائز ربع 2', stage: 'نصف النهائي', round: 7, start: '2026-07-14T19:00:00Z' }); // 3pm ET
+  fixtures.push({ teamA: 'فائز ربع 3', teamB: 'فائز ربع 4', stage: 'نصف النهائي', round: 7, start: '2026-07-15T19:00:00Z' }); // 3pm ET
+
+  // ============================
+  // النهائي (Round 8) — مباراة واحدة
+  // ============================
+  fixtures.push({ teamA: 'فائز نصف 1', teamB: 'فائز نصف 2', stage: 'النهائي', round: 8, start: '2026-07-19T19:00:00Z' }); // 3pm ET
 
   return fixtures;
 }
@@ -259,7 +307,7 @@ async function init() {
     }
 
     const matchesCheck = await client.query('SELECT COUNT(*) FROM matches');
-    const expectedCount = 133;
+    const expectedCount = 103;
     const currentCount = parseInt(matchesCheck.rows[0].count);
     if (currentCount !== expectedCount) {
       console.log(`Matches count is ${currentCount}, expected ${expectedCount}. Recreating...`);
@@ -855,35 +903,34 @@ module.exports = {
 };
 
 // ===== AUTO KNOCKOUT ADVANCEMENT =====
-// نظام كأس العالم 2026: 12 مجموعة × 4 فرق
-// الأول والثاني من كل مجموعة + أفضل 8 ثوالث = 32 فريق لدور الـ 32
+// نظام كأس العالم 2026 الرسمي
+// 12 مجموعة × 4 فرق = 48 فريق
+// الأول والثاني من كل مجموعة + أفضل 8 ثوالث = 32 فريق
+// دور الـ 32 = 16 مباراة → دور الـ 16 = 8 مباريات → ربع = 4 → نصف = 2 → نهائي = 1
 async function advanceKnockoutTeams() {
   try {
-    // 1) جلب كل المباريات
     const allMatches = await getMatches();
 
-    // 2) تحقق هل دور المجموعات اكتمل (كل مباريات الجولات 1-3 ليها نتائج)
+    // تحقق هل دور المجموعات اكتمل
     const groupMatches = allMatches.filter(m => m.round >= 1 && m.round <= 3);
     const completedGroupMatches = groupMatches.filter(m => m.actual_scoreA !== null && m.actual_scoreB !== null);
 
     if (groupMatches.length > 0 && completedGroupMatches.length === groupMatches.length) {
-      // دور المجموعات اكتمل - نحسب الترتيب ونأهل الفرق
       await advanceToRound32(allMatches);
     }
 
-    // 3) تقدم الفائزين في كل دور إقصائي
+    // تقدم الفائزين في كل دور إقصائي
     await advanceWinnersInRound(allMatches, 4, 5); // دور 32 → دور 16
-    await advanceWinnersInRound(allMatches, 5, 6); // دور 16 → دور 8
-    await advanceWinnersInRound(allMatches, 6, 7); // دور 8 → دور 4
-    await advanceWinnersInRound(allMatches, 7, 8); // دور 4 → النهائي
+    await advanceWinnersInRound(allMatches, 5, 6); // دور 16 → ربع النهائي
+    await advanceWinnersInRound(allMatches, 6, 7); // ربع → نصف النهائي
+    await advanceWinnersInRound(allMatches, 7, 8); // نصف → النهائي
 
   } catch (err) {
     console.error('advanceKnockoutTeams error:', err);
   }
 }
 
-async function advanceToRound32(allMatches) {
-  // حساب ترتيب كل مجموعة
+function getGroupStandingsCalc(allMatches) {
   const groupNames = Object.keys(GROUPS);
   const standings = {};
 
@@ -906,112 +953,96 @@ async function advanceToRound32(allMatches) {
       else if (m.actual_scoreA < m.actual_scoreB) { b.wins++; b.points += 3; a.losses++; }
       else { a.draws++; b.draws++; a.points++; b.points++; }
     }
-
     for (const t of Object.values(teamStats)) { t.gd = t.scored - t.conceded; }
-
-    const sorted = Object.values(teamStats).sort((a, b) =>
+    standings[gName] = Object.values(teamStats).sort((a, b) =>
       b.points - a.points || b.gd - a.gd || b.scored - a.scored
     );
-    standings[gName] = sorted;
   }
+  return standings;
+}
 
-  // الأول والثاني من كل مجموعة
-  const firsts = [];
-  const seconds = [];
-  const thirds = [];
+async function advanceToRound32(allMatches) {
+  const groupNames = Object.keys(GROUPS);
+  const standings = getGroupStandingsCalc(allMatches);
 
+  // ترتيب: index 0=A, 1=B, ... 11=L
+  const pos = {}; // pos['المجموعة X'] = { first, second, third }
   for (const gName of groupNames) {
-    const sorted = standings[gName];
-    if (sorted.length >= 1) firsts.push({ ...sorted[0], group: gName });
-    if (sorted.length >= 2) seconds.push({ ...sorted[1], group: gName });
-    if (sorted.length >= 3) thirds.push({ ...sorted[2], group: gName });
+    const s = standings[gName];
+    pos[gName] = { first: s[0]?.name, second: s[1]?.name, third: s[2]?.name };
   }
 
   // أفضل 8 ثوالث
-  const bestThirds = thirds
-    .sort((a, b) => b.points - a.points || b.gd - a.gd || b.scored - a.scored)
-    .slice(0, 8);
+  const allThirds = groupNames.map(g => ({ ...standings[g][2], group: g })).filter(t => t.name);
+  const bestThirds = allThirds.sort((a, b) => b.points - a.points || b.gd - a.gd || b.scored - a.scored).slice(0, 8);
+  const thirdGroupLetters = bestThirds.map(t => t.group.replace('المجموعة ', '')).sort();
+  const thirdGroupKey = thirdGroupLetters.join('');
 
-  // كل المتأهلين (32 فريق)
-  const qualified = [...firsts, ...seconds, ...bestThirds];
+  // خريطة: أي ثالث يلعب ضد أي أول حسب المجموعات المتأهلة
+  // هنبني lookup سريع: اسم الثالث حسب حرف المجموعة
+  const thirdByGroup = {};
+  for (const t of bestThirds) {
+    const letter = t.group.replace('المجموعة ', '');
+    thirdByGroup[letter] = t.name;
+  }
 
-  if (qualified.length < 32) return; // مش كفاية فرق
+  // التقابلات الرسمية لدور الـ 32 (16 مباراة) بالترتيب حسب generateFixtures:
+  // مباراة 1: ثاني A vs ثاني B
+  // مباراة 2: أول C vs ثاني F
+  // مباراة 3: أول E vs ثالث (من ABCDF)
+  // مباراة 4: أول F vs ثاني C
+  // مباراة 5: ثاني E vs ثاني I
+  // مباراة 6: أول I vs ثالث (من CDFGH)
+  // مباراة 7: أول A vs ثالث (من CEFHI)
+  // مباراة 8: أول L vs ثالث (من EHIJK)
+  // مباراة 9: أول G vs ثالث (من AEHIJ)
+  // مباراة 10: أول D vs ثالث (من BEFIJ)
+  // مباراة 11: أول H vs ثاني J
+  // مباراة 12: ثاني K vs ثاني L
+  // مباراة 13: أول B vs ثالث (من EFGIJ)
+  // مباراة 14: ثاني D vs ثاني G
+  // مباراة 15: أول J vs ثاني H
+  // مباراة 16: أول K vs ثالث (من DEIJL)
 
-  // نظام التوزيع في دور الـ 32 حسب FIFA 2026:
-  // أول المجموعات (12) vs أفضل الثوالث (8) + ثاني المجموعات (12) vs ثاني مجموعات أخرى
-  // هنستخدم نظام مبسط:
-  // المباراة 1: أول A vs أفضل ثالث 8
-  // المباراة 2: أول B vs أفضل ثالث 7
-  // ... وهكذا
-  // المباراة 9-12: أول I-L vs ثاني مجموعات
-  // المباراة 13-20: ثاني vs ثاني (cross)
+  function pickThird(possibleGroups) {
+    // نختار أول ثالث متاح من المجموعات المحددة
+    for (const letter of possibleGroups) {
+      if (thirdByGroup[letter]) return thirdByGroup[letter];
+    }
+    return null;
+  }
 
-  // ترتيب مبسط ومنطقي: أول مجموعة vs ثالث، ثاني مجموعة vs ثاني مجموعة أخرى
+  const G = (name) => pos[name]; // اختصار
+
+  const pairings = [
+    { teamA: G('المجموعة A')?.second, teamB: G('المجموعة B')?.second },
+    { teamA: G('المجموعة C')?.first, teamB: G('المجموعة F')?.second },
+    { teamA: G('المجموعة E')?.first, teamB: pickThird(['A','B','C','D','F']) },
+    { teamA: G('المجموعة F')?.first, teamB: G('المجموعة C')?.second },
+    { teamA: G('المجموعة E')?.second, teamB: G('المجموعة I')?.second },
+    { teamA: G('المجموعة I')?.first, teamB: pickThird(['C','D','F','G','H']) },
+    { teamA: G('المجموعة A')?.first, teamB: pickThird(['C','E','F','H','I']) },
+    { teamA: G('المجموعة L')?.first, teamB: pickThird(['E','H','I','J','K']) },
+    { teamA: G('المجموعة G')?.first, teamB: pickThird(['A','E','H','I','J']) },
+    { teamA: G('المجموعة D')?.first, teamB: pickThird(['B','E','F','I','J']) },
+    { teamA: G('المجموعة H')?.first, teamB: G('المجموعة J')?.second },
+    { teamA: G('المجموعة K')?.second, teamB: G('المجموعة L')?.second },
+    { teamA: G('المجموعة B')?.first, teamB: pickThird(['E','F','G','I','J']) },
+    { teamA: G('المجموعة D')?.second, teamB: G('المجموعة G')?.second },
+    { teamA: G('المجموعة J')?.first, teamB: G('المجموعة H')?.second },
+    { teamA: G('المجموعة K')?.first, teamB: pickThird(['D','E','I','J','L']) },
+  ];
+
   const round32Matches = allMatches.filter(m => m.round === 4).sort((a, b) => a.id - b.id);
-
   if (round32Matches.length === 0) return;
 
-  // نظام التقابلات:
-  // أوائل المجموعات (12) يلعبوا ضد أفضل الثوالث (8) والباقي ضد ثواني مجموعات أخرى
-  // ثواني المجموعات الباقين يلعبوا ضد بعض
-
-  // ترتيب أوائل: A, B, C, D, E, F, G, H, I, J, K, L
-  // ترتيب ثواني: A, B, C, D, E, F, G, H, I, J, K, L
-  // أفضل 8 ثوالث مرتبين
-
-  // مباريات 1-8: أول مجموعة vs أفضل ثالث
-  // مباراة 1: أول A vs ثالث (أفضل 8)
-  // مباراة 2: أول B vs ثالث (أفضل 7)
-  // ...
-  // مباريات 9-12: أول I,J,K,L vs ثاني مجموعة أخرى (cross)
-  // مباريات 13-20: ثاني vs ثاني
-  // ...
-
-  // نستخدم نظام FIFA المبسط
-  const pairings = [];
-
-  // أوائل مجموعات A-H vs أفضل 8 ثوالث
-  for (let i = 0; i < 8 && i < firsts.length && i < bestThirds.length; i++) {
-    pairings.push({ teamA: firsts[i].name, teamB: bestThirds[7 - i].name });
-  }
-
-  // أوائل مجموعات I-L vs ثواني مجموعات (cross)
-  // أول I vs ثاني D, أول J vs ثاني C, أول K vs ثاني B, أول L vs ثاني A
-  const crossSeconds = [seconds[3], seconds[2], seconds[1], seconds[0]]; // D, C, B, A
-  for (let i = 8; i < 12 && i < firsts.length; i++) {
-    const si = i - 8;
-    if (si < crossSeconds.length) {
-      pairings.push({ teamA: firsts[i].name, teamB: crossSeconds[si].name });
-    }
-  }
-
-  // الثواني الباقين يلعبوا ضد بعض (8 ثواني باقيين = 4+4)
-  // ثاني E vs ثاني L, ثاني F vs ثاني K, ثاني G vs ثاني J, ثاني H vs ثاني I
-  const remainingSeconds = [seconds[4], seconds[5], seconds[6], seconds[7],
-                            seconds[11], seconds[10], seconds[9], seconds[8]];
-  for (let i = 0; i < 4; i++) {
-    pairings.push({ teamA: remainingSeconds[i].name, teamB: remainingSeconds[i + 4].name });
-  }
-
-  // 16 مباراة مكررة (كل مباراة ليها مباراة مقابلة في النصف الآخر)
-  // نكرر نفس النمط لباقي الـ 16 مباراة
-  // ثاني E-H vs أفضل ثوالث في ترتيب مختلف
-  // لتبسيط: الـ 16 مباراة المتبقية
-  // أول A-D ثاني E-H, إلخ - هنملأ الباقي بأي فرق متأهلة لسه ما اتحطتش
-  const usedTeams = new Set(pairings.flatMap(p => [p.teamA, p.teamB]));
-  const unusedQualified = qualified.filter(q => !usedTeams.has(q.name));
-
-  // نوزع الباقي في أزواج
-  for (let i = 0; i < unusedQualified.length - 1; i += 2) {
-    pairings.push({ teamA: unusedQualified[i].name, teamB: unusedQualified[i + 1].name });
-  }
-
-  // نحدث مباريات دور الـ 32
   for (let i = 0; i < round32Matches.length && i < pairings.length; i++) {
     const m = round32Matches[i];
     const p = pairings[i];
+    if (!p.teamA || !p.teamB) continue;
     // نحدث بس لو الفرق لسه placeholder
-    if (m.teamA.startsWith('الفريق') || m.teamA.startsWith('الفائز')) {
+    const isPlaceholder = (t) => !t || t.startsWith('ثاني') || t.startsWith('أول') || t.startsWith('ثالث') || t.startsWith('فائز');
+    if (isPlaceholder(m.teamA)) {
       await updateKnockoutTeams(m.id, p.teamA, p.teamB);
     }
   }
@@ -1031,14 +1062,12 @@ async function advanceWinnersInRound(allMatches, fromRound, toRound) {
 
     if (!matchA || !matchB) continue;
 
-    // لو المباراتين خلصوا
     const winnerA = getMatchWinner(matchA);
     const winnerB = getMatchWinner(matchB);
 
     if (winnerA && winnerB) {
-      // نحدث بس لو الفرق لسه placeholder
-      if (toMatch.teamA.startsWith('الفائز') || toMatch.teamA.startsWith('الفريق') ||
-          (toMatch.teamA !== winnerA || toMatch.teamB !== winnerB)) {
+      const isPlaceholder = (t) => !t || t.startsWith('فائز') || t.startsWith('ثاني') || t.startsWith('أول') || t.startsWith('ثالث');
+      if (isPlaceholder(toMatch.teamA) || (toMatch.teamA !== winnerA || toMatch.teamB !== winnerB)) {
         await updateKnockoutTeams(toMatch.id, winnerA, winnerB);
       }
     }
@@ -1049,8 +1078,7 @@ function getMatchWinner(match) {
   if (match.actual_scoreA === null || match.actual_scoreB === null) return null;
   if (match.actual_scoreA > match.actual_scoreB) return match.teamA;
   if (match.actual_scoreB > match.actual_scoreA) return match.teamB;
-  // تعادل في الأدوار الإقصائية - نرجع الفريق A كـ default (الأدمن يقدر يعدل)
-  // في الواقع هيبقى فيه ركلات ترجيح
+  // تعادل في الأدوار الإقصائية - نرجع الفريق A كـ default (الأدمن يقدر يعدل يدوي)
   return match.teamA;
 }
 
