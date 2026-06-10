@@ -647,6 +647,8 @@ app.post('/matches/:id/result', requireAuth, requireAdmin, async (req, res) => {
     if (Number.isNaN(a) || Number.isNaN(b)) return res.redirect('/dashboard?tab=results');
     await db.updateMatchResult(match.id, a, b);
     await db.calculateGroupStandings();
+    // تقدم الفرق أوتوماتيك في الأدوار الإقصائية
+    await db.advanceKnockoutTeams();
     res.redirect('/dashboard?tab=results');
   } catch (err) {
     console.error('Update result error:', err);

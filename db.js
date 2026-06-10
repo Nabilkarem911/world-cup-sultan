@@ -851,8 +851,209 @@ module.exports = {
   getNews,
   addNews,
   deleteNews,
-  updateNews
+  updateNews,
+  advanceKnockoutTeams
 };
+
+// ===== AUTO KNOCKOUT ADVANCEMENT =====
+// نظام كأس العالم 2026: 12 مجموعة × 4 فرق
+// الأول والثاني من كل مجموعة + أفضل 8 ثوالث = 32 فريق لدور الـ 32
+async function advanceKnockoutTeams() {
+  try {
+    // 1) جلب كل المباريات
+    const allMatches = await getMatches();
+
+    // 2) تحقق هل دور المجموعات اكتمل (كل مباريات الجولات 1-3 ليها نتائج)
+    const groupMatches = allMatches.filter(m => m.round >= 1 && m.round <= 3);
+    const completedGroupMatches = groupMatches.filter(m => m.actual_scoreA !== null && m.actual_scoreB !== null);
+
+    if (groupMatches.length > 0 && completedGroupMatches.length === groupMatches.length) {
+      // دور المجموعات اكتمل - نحسب الترتيب ونأهل الفرق
+      await advanceToRound32(allMatches);
+    }
+
+    // 3) تقدم الفائزين في كل دور إقصائي
+    await advanceWinnersInRound(allMatches, 4, 5); // دور 32 → دور 16
+    await advanceWinnersInRound(allMatches, 5, 6); // دور 16 → دور 8
+    await advanceWinnersInRound(allMatches, 6, 7); // دور 8 → دور 4
+    await advanceWinnersInRound(allMatches, 7, 8); // دور 4 → النهائي
+
+  } catch (err) {
+    console.error('advanceKnockoutTeams error:', err);
+  }
+}
+
+async function advanceToRound32(allMatches) {
+  // حساب ترتيب كل مجموعة
+  const groupNames = Object.keys(GROUPS);
+  const standings = {};
+
+  for (const gName of groupNames) {
+    const teams = GROUPS[gName];
+    const teamStats = {};
+    for (const t of teams) {
+      teamStats[t] = { name: t, played: 0, wins: 0, draws: 0, losses: 0, scored: 0, conceded: 0, gd: 0, points: 0 };
+    }
+
+    const gMatches = allMatches.filter(m => m.round >= 1 && m.round <= 3 && m.stage === gName && m.actual_scoreA !== null);
+    for (const m of gMatches) {
+      const a = teamStats[m.teamA];
+      const b = teamStats[m.teamB];
+      if (!a || !b) continue;
+      a.played++; b.played++;
+      a.scored += m.actual_scoreA; a.conceded += m.actual_scoreB;
+      b.scored += m.actual_scoreB; b.conceded += m.actual_scoreA;
+      if (m.actual_scoreA > m.actual_scoreB) { a.wins++; a.points += 3; b.losses++; }
+      else if (m.actual_scoreA < m.actual_scoreB) { b.wins++; b.points += 3; a.losses++; }
+      else { a.draws++; b.draws++; a.points++; b.points++; }
+    }
+
+    for (const t of Object.values(teamStats)) { t.gd = t.scored - t.conceded; }
+
+    const sorted = Object.values(teamStats).sort((a, b) =>
+      b.points - a.points || b.gd - a.gd || b.scored - a.scored
+    );
+    standings[gName] = sorted;
+  }
+
+  // الأول والثاني من كل مجموعة
+  const firsts = [];
+  const seconds = [];
+  const thirds = [];
+
+  for (const gName of groupNames) {
+    const sorted = standings[gName];
+    if (sorted.length >= 1) firsts.push({ ...sorted[0], group: gName });
+    if (sorted.length >= 2) seconds.push({ ...sorted[1], group: gName });
+    if (sorted.length >= 3) thirds.push({ ...sorted[2], group: gName });
+  }
+
+  // أفضل 8 ثوالث
+  const bestThirds = thirds
+    .sort((a, b) => b.points - a.points || b.gd - a.gd || b.scored - a.scored)
+    .slice(0, 8);
+
+  // كل المتأهلين (32 فريق)
+  const qualified = [...firsts, ...seconds, ...bestThirds];
+
+  if (qualified.length < 32) return; // مش كفاية فرق
+
+  // نظام التوزيع في دور الـ 32 حسب FIFA 2026:
+  // أول المجموعات (12) vs أفضل الثوالث (8) + ثاني المجموعات (12) vs ثاني مجموعات أخرى
+  // هنستخدم نظام مبسط:
+  // المباراة 1: أول A vs أفضل ثالث 8
+  // المباراة 2: أول B vs أفضل ثالث 7
+  // ... وهكذا
+  // المباراة 9-12: أول I-L vs ثاني مجموعات
+  // المباراة 13-20: ثاني vs ثاني (cross)
+
+  // ترتيب مبسط ومنطقي: أول مجموعة vs ثالث، ثاني مجموعة vs ثاني مجموعة أخرى
+  const round32Matches = allMatches.filter(m => m.round === 4).sort((a, b) => a.id - b.id);
+
+  if (round32Matches.length === 0) return;
+
+  // نظام التقابلات:
+  // أوائل المجموعات (12) يلعبوا ضد أفضل الثوالث (8) والباقي ضد ثواني مجموعات أخرى
+  // ثواني المجموعات الباقين يلعبوا ضد بعض
+
+  // ترتيب أوائل: A, B, C, D, E, F, G, H, I, J, K, L
+  // ترتيب ثواني: A, B, C, D, E, F, G, H, I, J, K, L
+  // أفضل 8 ثوالث مرتبين
+
+  // مباريات 1-8: أول مجموعة vs أفضل ثالث
+  // مباراة 1: أول A vs ثالث (أفضل 8)
+  // مباراة 2: أول B vs ثالث (أفضل 7)
+  // ...
+  // مباريات 9-12: أول I,J,K,L vs ثاني مجموعة أخرى (cross)
+  // مباريات 13-20: ثاني vs ثاني
+  // ...
+
+  // نستخدم نظام FIFA المبسط
+  const pairings = [];
+
+  // أوائل مجموعات A-H vs أفضل 8 ثوالث
+  for (let i = 0; i < 8 && i < firsts.length && i < bestThirds.length; i++) {
+    pairings.push({ teamA: firsts[i].name, teamB: bestThirds[7 - i].name });
+  }
+
+  // أوائل مجموعات I-L vs ثواني مجموعات (cross)
+  // أول I vs ثاني D, أول J vs ثاني C, أول K vs ثاني B, أول L vs ثاني A
+  const crossSeconds = [seconds[3], seconds[2], seconds[1], seconds[0]]; // D, C, B, A
+  for (let i = 8; i < 12 && i < firsts.length; i++) {
+    const si = i - 8;
+    if (si < crossSeconds.length) {
+      pairings.push({ teamA: firsts[i].name, teamB: crossSeconds[si].name });
+    }
+  }
+
+  // الثواني الباقين يلعبوا ضد بعض (8 ثواني باقيين = 4+4)
+  // ثاني E vs ثاني L, ثاني F vs ثاني K, ثاني G vs ثاني J, ثاني H vs ثاني I
+  const remainingSeconds = [seconds[4], seconds[5], seconds[6], seconds[7],
+                            seconds[11], seconds[10], seconds[9], seconds[8]];
+  for (let i = 0; i < 4; i++) {
+    pairings.push({ teamA: remainingSeconds[i].name, teamB: remainingSeconds[i + 4].name });
+  }
+
+  // 16 مباراة مكررة (كل مباراة ليها مباراة مقابلة في النصف الآخر)
+  // نكرر نفس النمط لباقي الـ 16 مباراة
+  // ثاني E-H vs أفضل ثوالث في ترتيب مختلف
+  // لتبسيط: الـ 16 مباراة المتبقية
+  // أول A-D ثاني E-H, إلخ - هنملأ الباقي بأي فرق متأهلة لسه ما اتحطتش
+  const usedTeams = new Set(pairings.flatMap(p => [p.teamA, p.teamB]));
+  const unusedQualified = qualified.filter(q => !usedTeams.has(q.name));
+
+  // نوزع الباقي في أزواج
+  for (let i = 0; i < unusedQualified.length - 1; i += 2) {
+    pairings.push({ teamA: unusedQualified[i].name, teamB: unusedQualified[i + 1].name });
+  }
+
+  // نحدث مباريات دور الـ 32
+  for (let i = 0; i < round32Matches.length && i < pairings.length; i++) {
+    const m = round32Matches[i];
+    const p = pairings[i];
+    // نحدث بس لو الفرق لسه placeholder
+    if (m.teamA.startsWith('الفريق') || m.teamA.startsWith('الفائز')) {
+      await updateKnockoutTeams(m.id, p.teamA, p.teamB);
+    }
+  }
+}
+
+async function advanceWinnersInRound(allMatches, fromRound, toRound) {
+  const fromMatches = allMatches.filter(m => m.round === fromRound).sort((a, b) => a.id - b.id);
+  const toMatches = allMatches.filter(m => m.round === toRound).sort((a, b) => a.id - b.id);
+
+  if (toMatches.length === 0) return;
+
+  // كل مباراتين متتاليتين في الدور الحالي → الفائزين يروحوا مباراة واحدة في الدور التالي
+  for (let i = 0; i < toMatches.length; i++) {
+    const matchA = fromMatches[i * 2];
+    const matchB = fromMatches[i * 2 + 1];
+    const toMatch = toMatches[i];
+
+    if (!matchA || !matchB) continue;
+
+    // لو المباراتين خلصوا
+    const winnerA = getMatchWinner(matchA);
+    const winnerB = getMatchWinner(matchB);
+
+    if (winnerA && winnerB) {
+      // نحدث بس لو الفرق لسه placeholder
+      if (toMatch.teamA.startsWith('الفائز') || toMatch.teamA.startsWith('الفريق') ||
+          (toMatch.teamA !== winnerA || toMatch.teamB !== winnerB)) {
+        await updateKnockoutTeams(toMatch.id, winnerA, winnerB);
+      }
+    }
+  }
+}
+
+function getMatchWinner(match) {
+  if (match.actual_scoreA === null || match.actual_scoreB === null) return null;
+  if (match.actual_scoreA > match.actual_scoreB) return match.teamA;
+  if (match.actual_scoreB > match.actual_scoreA) return match.teamB;
+  // تعادل في الأدوار الإقصائية - نرجع الفريق A كـ default (الأدمن يقدر يعدل)
+  // في الواقع هيبقى فيه ركلات ترجيح
+  return match.teamA;
+}
 
 async function initNewsTable() {
   await pool.query(`
