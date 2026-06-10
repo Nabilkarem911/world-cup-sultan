@@ -492,8 +492,7 @@ async function getUserPredictions(userId) {
 
 async function getLastPrediction(userId) {
   const result = await pool.query(`
-    SELECT p.*, m.teamA, m.teamB, m.stage, m.start_at, m.round, m.actual_scoreA, m.actual_scoreB,
-           COALESCE(p.points, 0) as points
+    SELECT p.*, m.teamA, m.teamB, m.stage, m.start_at, m.round, m.actual_scoreA, m.actual_scoreB
     FROM predictions p
     JOIN matches m ON p.match_id = m.id
     WHERE p.user_id = $1

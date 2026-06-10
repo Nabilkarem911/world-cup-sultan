@@ -219,7 +219,6 @@
           </button>
           <button class="db-tab <%= activeTab==='predictions'?'active':'' %>" onclick="dbTab('predictions',this)">التوقعات</button>
           <button class="db-tab <%= activeTab==='results'?'active':'' %>" onclick="dbTab('results',this)">النتائج</button>
-          <button class="db-tab <%= activeTab==='knockout'?'active':'' %>" onclick="dbTab('knockout',this)">الأدوار الإقصائية</button>
           <button class="db-tab <%= activeTab==='rounds'?'active':'' %>" onclick="dbTab('rounds',this)">الجولات</button>
           <button class="db-tab <%= activeTab==='leaderboard'?'active':'' %>" onclick="dbTab('leaderboard',this)">الترتيب</button>
           <button class="db-tab <%= activeTab==='news'?'active':'' %>" onclick="dbTab('news',this)">الأخبار</button>
@@ -512,72 +511,6 @@
           </div>
         </div>
 
-        <!-- ===== TAB: الأدوار الإقصائية ===== -->
-        <div class="db-panel <%= activeTab==='knockout'?'active':'' %>" id="panel-knockout">
-          <%
-            var allTeams = Object.values(groups).flat().sort();
-            var koRounds = [
-              { round: 4, name: 'دور الـ 32', matches: matchesByRound[4] || [] },
-              { round: 5, name: 'دور الـ 16', matches: matchesByRound[5] || [] },
-              { round: 6, name: 'دور الـ 8',  matches: matchesByRound[6] || [] },
-              { round: 7, name: 'دور الـ 4',  matches: matchesByRound[7] || [] },
-              { round: 8, name: 'النهائي',     matches: matchesByRound[8] || [] }
-            ];
-          %>
-          <% koRounds.forEach(function(kr) { %>
-          <% if (kr.matches.length > 0) { %>
-          <div class="card section-card" style="margin-bottom:14px;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-              <h3 style="margin:0;font-size:0.95rem;font-weight:800;"><%= kr.name %></h3>
-              <% if (publishedRounds.includes(kr.round)) { %>
-                <span class="db-round-badge pub">✓ منشور</span>
-              <% } else { %>
-                <span class="db-round-badge unpub">غير منشور</span>
-              <% } %>
-            </div>
-            <div class="ko-grid">
-              <% kr.matches.forEach(function(match, mi) {
-                   var hasRealTeams = match.teamA && !match.teamA.startsWith('الفريق') && !match.teamA.startsWith('الفائز');
-              %>
-              <div class="ko-match-card <%= hasRealTeams ? 'has-teams' : '' %>">
-                <div class="ko-match-num">مباراة <%= mi+1 %></div>
-                <form method="POST" action="/admin/knockout-teams/<%= match.id %>">
-                  <div class="ko-teams-row">
-                    <div class="ko-team-select-wrap">
-                      <img class="ko-flag-preview" id="flag-a-<%= match.id %>"
-                           src="/flags/<%= teamFlags[match.teamA]||'unknown' %>.png"
-                           onerror="this.src='/flags/unknown.png'">
-                      <select name="teamA" class="ko-team-select"
-                              onchange="updateKoFlag(this,'flag-a-<%= match.id %>')">
-                        <option value="">-- اختر الفريق --</option>
-                        <% allTeams.forEach(function(t) { %>
-                        <option value="<%= t %>" <%= match.teamA===t?'selected':'' %>><%= t %></option>
-                        <% }) %>
-                      </select>
-                    </div>
-                    <span class="ko-vs">VS</span>
-                    <div class="ko-team-select-wrap">
-                      <img class="ko-flag-preview" id="flag-b-<%= match.id %>"
-                           src="/flags/<%= teamFlags[match.teamB]||'unknown' %>.png"
-                           onerror="this.src='/flags/unknown.png'">
-                      <select name="teamB" class="ko-team-select"
-                              onchange="updateKoFlag(this,'flag-b-<%= match.id %>')">
-                        <option value="">-- اختر الفريق --</option>
-                        <% allTeams.forEach(function(t) { %>
-                        <option value="<%= t %>" <%= match.teamB===t?'selected':'' %>><%= t %></option>
-                        <% }) %>
-                      </select>
-                    </div>
-                  </div>
-                  <button type="submit" class="ko-save-btn">💾 حفظ الفريقين</button>
-                </form>
-              </div>
-              <% }) %>
-            </div>
-          </div>
-          <% } %>
-          <% }) %>
-        </div>
 
         <!-- ===== TAB: الجولات ===== -->
         <div class="db-panel <%= activeTab==='rounds'?'active':'' %>" id="panel-rounds">

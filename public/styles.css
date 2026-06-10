@@ -7667,6 +7667,7 @@ body.drawer-open {
     font-size: 13px;
     color: rgba(255,255,255,0.8);
     margin-top: 12px;
+    margin-bottom: 20px;
   }
   .hm2-date svg { flex-shrink: 0; }
 
@@ -7676,7 +7677,7 @@ body.drawer-open {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     padding: 0 16px;
-    margin-top: -30px;
+    margin-top: -20px;
     position: relative;
     z-index: 1;
   }
