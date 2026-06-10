@@ -131,6 +131,10 @@
     .pg-match-row.visible { border-left:3px solid #22c55e; }
     .pg-group-badge { background:rgba(99,102,241,0.10); color:#6366f1; border-radius:20px; padding:2px 8px; font-size:0.7rem; font-weight:700; }
 
+    /* ===== RESULTS ===== */
+    .db-result-card { border-left:3px solid transparent; transition:border-color 0.2s; }
+    .db-result-card.has-result { border-left:3px solid #22c55e; background:rgba(34,197,94,0.03); }
+
     /* ===== PREDICTIONS MODAL ===== */
     .pred-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9000; display:none; align-items:center; justify-content:center; padding:16px; }
     .pred-modal-overlay.open { display:flex; }
@@ -426,51 +430,61 @@
         <!-- ===== TAB: النتائج ===== -->
         <div class="db-panel <%= activeTab==='results'?'active':'' %>" id="panel-results">
           <div class="card section-card">
-            <p style="color:var(--text-secondary);font-size:0.82rem;margin-bottom:14px;">اختر مجموعة · أدخل النتيجة واضغط حفظ</p>
+            <p style="color:var(--text-secondary);font-size:0.82rem;margin-bottom:14px;">اختر جولة · أدخل النتيجة واضغط حفظ</p>
 
             <%
-              var resGroupNames = Object.keys(groups);
-              var resRoundLabels = { 1:'الجولة الأولى', 2:'الجولة الثانية', 3:'الجولة الثالثة' };
+              var resRoundDefs = [
+                { round:1, name:'الجولة الأولى', type:'group' },
+                { round:2, name:'الجولة الثانية', type:'group' },
+                { round:3, name:'الجولة الثالثة', type:'group' },
+                { round:4, name:'دور الـ 32', type:'ko' },
+                { round:5, name:'دور الـ 16', type:'ko' },
+                { round:6, name:'دور الـ 8', type:'ko' },
+                { round:7, name:'دور الـ 4', type:'ko' },
+                { round:8, name:'النهائي', type:'ko' }
+              ];
+              var resultsRoundDefs = resRoundDefs.filter(function(rd) {
+                return (matchesByRound[rd.round] || []).length > 0;
+              });
+              var firstResRoundIdx = resultsRoundDefs.length > 0 ? 0 : -1;
             %>
 
-            <!-- Group Tabs -->
-            <div class="pg-group-tabs" id="res-group-tabs">
-              <% resGroupNames.forEach(function(gName, gi) { %>
-              <button class="pg-gtab <%= gi===0?'active':'' %>"
-                      onclick="resSwitchGroup(<%= gi %>,this)">
-                <%= gName %>
+            <!-- Round Tabs -->
+            <div class="pg-group-tabs" id="res-round-tabs">
+              <% resultsRoundDefs.forEach(function(rd, ri) { %>
+              <button class="pg-gtab <%= ri===firstResRoundIdx?'active':'' %>"
+                      onclick="resSwitchRoundTab(<%= ri %>,this)">
+                <%= rd.name %>
               </button>
               <% }) %>
             </div>
 
-            <!-- Group Panels -->
-            <% resGroupNames.forEach(function(gName, gi) {
-               var resGroupTeams = groups[gName];
-               var resGroupMatches = matches.filter(function(m){
-                 return m.round <= 3 && resGroupTeams.indexOf(m.teamA) !== -1;
-               });
-               var resRounds = [1,2,3];
+            <!-- Round Panels -->
+            <% resultsRoundDefs.forEach(function(rd, ri) {
+               var roundMatches = matchesByRound[rd.round] || [];
             %>
-            <div class="pg-group-panel <%= gi===0?'active':'' %>" id="res-panel-<%= gi %>">
+            <div class="pg-round-panel-main <%= ri===firstResRoundIdx?'active':'' %>" id="res-round-panel-<%= ri %>">
 
-              <div class="pg-round-filter">
-                <% resRounds.forEach(function(r, ri) { %>
-                <button class="pg-rfbtn <%= ri===0?'active':'' %>"
-                        onclick="resSwitchRound(<%= gi %>, <%= r %>, this)">
-                  <%= resRoundLabels[r] %>
-                </button>
-                <% }) %>
+              <div class="pg-bulk-header">
+                <div class="pg-bulk-info">
+                  <span class="pg-badge <%= rd.type==='group'?'':'published' %>">
+                    <%= roundMatches.length %> مباراة
+                  </span>
+                  <% if (rd.type === 'group') { %>
+                    <span class="pg-badge">دور المجموعات</span>
+                  <% } else { %>
+                    <span class="pg-badge published">أدوار إقصائية</span>
+                  <% } %>
+                </div>
               </div>
 
-              <% resRounds.forEach(function(r, ri) {
-                 var resRoundMatches = resGroupMatches.filter(function(m){ return m.round === r; });
-              %>
-              <div class="res-round-panel" id="res-rp-<%= gi %>-<%= r %>" style="<%= ri===0?'':'display:none' %>">
-                <% if (resRoundMatches.length === 0) { %>
-                  <p style="color:var(--text-secondary);font-size:0.83rem;padding:8px 0;">لا توجد مباريات</p>
+              <!-- Matches List -->
+              <div class="pg-matches-list">
+                <% if (roundMatches.length === 0) { %>
+                  <p style="color:var(--text-secondary);font-size:0.83rem;padding:8px 0;">لا توجد مباريات في هذه الجولة</p>
                 <% } else { %>
-                  <% resRoundMatches.forEach(function(match) { %>
-                  <div class="db-result-card">
+                  <% roundMatches.forEach(function(match) { %>
+                  <div class="db-result-card <%= match.actual_scoreA !== null?'has-result':'' %>">
                     <div class="db-result-teams">
                       <img src="/flags/<%= teamFlags[match.teamA]||'unknown' %>.png" onerror="this.src='/flags/unknown.png'" class="db-result-flag">
                       <span class="pg-team-name" style="max-width:none"><%= match.teamA %></span>
@@ -491,65 +505,9 @@
                   <% }) %>
                 <% } %>
               </div>
-              <% }) %>
 
             </div>
             <% }) %>
-
-            <!-- ===== الأدوار الإقصائية ===== -->
-            <div class="pg-ko-section">
-              <div class="pg-ko-title">الأدوار الإقصائية</div>
-              <%
-                var resKoDefs = [
-                  { round:4, name:'دور الـ 32' },
-                  { round:5, name:'دور الـ 16' },
-                  { round:6, name:'دور الـ 8' },
-                  { round:7, name:'دور الـ 4' },
-                  { round:8, name:'النهائي' }
-                ];
-                var firstResKo = -1;
-                resKoDefs.forEach(function(k,i){ if(firstResKo===-1 && (matchesByRound[k.round]||[]).length>0) firstResKo=i; });
-              %>
-              <div class="pg-group-tabs" style="margin-bottom:12px;">
-                <% resKoDefs.forEach(function(krd, ki) {
-                     if ((matchesByRound[krd.round]||[]).length > 0) {
-                %>
-                <button class="pg-gtab <%= ki===firstResKo?'active':'' %>"
-                        onclick="resSwitchKo(<%= ki %>,this)">
-                  <%= krd.name %>
-                </button>
-                <% } }) %>
-              </div>
-
-              <% resKoDefs.forEach(function(krd, ki) {
-                   var resKoMatches = matchesByRound[krd.round] || [];
-              %>
-              <% if (resKoMatches.length > 0) { %>
-              <div class="res-ko-panel" id="res-ko-<%= ki %>" style="<%= ki===firstResKo?'':'display:none' %>">
-                <% resKoMatches.forEach(function(match) { %>
-                <div class="db-result-card">
-                  <div class="db-result-teams">
-                    <img src="/flags/<%= teamFlags[match.teamA]||'unknown' %>.png" onerror="this.src='/flags/unknown.png'" class="db-result-flag">
-                    <span class="pg-team-name" style="max-width:none"><%= match.teamA %></span>
-                    <span class="db-result-vs">VS</span>
-                    <span class="pg-team-name" style="max-width:none"><%= match.teamB %></span>
-                    <img src="/flags/<%= teamFlags[match.teamB]||'unknown' %>.png" onerror="this.src='/flags/unknown.png'" class="db-result-flag">
-                  </div>
-                  <% if (match.actual_scoreA !== null) { %>
-                    <span class="db-result-actual"><%= match.actual_scoreA %> - <%= match.actual_scoreB %></span>
-                  <% } %>
-                  <form method="POST" action="/matches/<%= match.id %>/result" class="db-result-form">
-                    <input type="number" name="scoreA" min="0" max="99" value="<%= match.actual_scoreA !== null ? match.actual_scoreA : '' %>" placeholder="0" class="score-input" style="width:48px;">
-                    <span>-</span>
-                    <input type="number" name="scoreB" min="0" max="99" value="<%= match.actual_scoreB !== null ? match.actual_scoreB : '' %>" placeholder="0" class="score-input" style="width:48px;">
-                    <button type="submit" class="btn-save">حفظ</button>
-                  </form>
-                </div>
-                <% }) %>
-              </div>
-              <% } %>
-              <% }) %>
-            </div>
 
           </div>
         </div>
@@ -858,6 +816,14 @@
       document.querySelectorAll('.pg-group-panel').forEach(function(p){ p.classList.remove('active'); });
       document.querySelectorAll('#panel-predictions > .card > .pg-group-tabs .pg-gtab').forEach(function(t){ t.classList.remove('active'); });
       var panel = document.getElementById('pg-panel-' + gi);
+      if (panel) panel.classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function resSwitchRoundTab(ri, btn) {
+      document.querySelectorAll('#panel-results .pg-round-panel-main').forEach(function(p){ p.classList.remove('active'); });
+      document.querySelectorAll('#res-round-tabs .pg-gtab').forEach(function(t){ t.classList.remove('active'); });
+      var panel = document.getElementById('res-round-panel-' + ri);
       if (panel) panel.classList.add('active');
       btn.classList.add('active');
     }
