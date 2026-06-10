@@ -510,6 +510,22 @@ app.post('/admin/toggle-predictions/:matchId', requireAuth, requireAdmin, adminL
   }
 });
 
+app.post('/admin/toggle-round-predictions', requireAuth, requireAdmin, adminLimiter, async (req, res) => {
+  try {
+    const { round, action } = req.body;
+    const roundNum = parseInt(round, 10);
+    const allMatches = await db.getMatches();
+    const roundMatches = allMatches.filter(m => m.round === roundNum);
+    const matchIds = roundMatches.map(m => m.id);
+    const makeVisible = action === 'show';
+    await db.toggleRoundPredictionsVisibility(roundNum, matchIds, makeVisible);
+    res.redirect('/dashboard?tab=predictions');
+  } catch (err) {
+    console.error('Toggle round predictions error:', err);
+    res.redirect('/dashboard?tab=predictions');
+  }
+});
+
 app.post('/admin/approve/:id', requireAuth, requireAdmin, adminLimiter, async (req, res) => {
   try {
     await db.approveUser(req.params.id);

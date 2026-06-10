@@ -426,6 +426,24 @@ async function togglePredictionVisibility(matchId) {
   return updated;
 }
 
+async function toggleRoundPredictionsVisibility(round, matchIds, makeVisible) {
+  const visible = await getVisiblePredictions();
+  const ids = matchIds.map(id => parseInt(id, 10));
+  let updated;
+  if (makeVisible) {
+    // Add all match IDs to visible
+    updated = [...new Set([...visible, ...ids])];
+  } else {
+    // Remove all match IDs from visible
+    updated = visible.filter(v => !ids.includes(v));
+  }
+  await pool.query(
+    "INSERT INTO settings (key, value) VALUES ('visible_predictions', $1) ON CONFLICT (key) DO UPDATE SET value = $1",
+    [JSON.stringify(updated)]
+  );
+  return updated;
+}
+
 async function getAllPredictionsForMatch(matchId) {
   const result = await pool.query(`
     SELECT p.*, u.name AS user_name
@@ -813,6 +831,7 @@ module.exports = {
   unpublishRound,
   getVisiblePredictions,
   togglePredictionVisibility,
+  toggleRoundPredictionsVisibility,
   getAllPredictionsForMatch,
   getMatchById,
   savePrediction,
