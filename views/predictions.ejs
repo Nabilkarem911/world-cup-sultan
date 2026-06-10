@@ -110,8 +110,8 @@
                   <span class="pc2-card-stage"><%= m.stage || 'دوري المجموعات' %></span>
                   <div class="pc2-card-meta">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    <span><%= new Date(m.start_at).toLocaleDateString('ar-SA',{weekday:'long',month:'long',day:'numeric'}) %></span>
-                    <span class="pc2-card-time-badge">م <%= new Date(m.start_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}) %></span>
+                    <span><%= new Date(m.start_at).toLocaleDateString('ar-SA',{weekday:'long',month:'long',day:'numeric',timeZone:'Asia/Riyadh'}) %></span>
+                    <span class="pc2-card-time-badge">م <%= new Date(m.start_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Riyadh'}) %></span>
                   </div>
                 </div>
 
@@ -228,7 +228,7 @@
           </div>
           <div class="pr-topbar-date">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <%= new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+            <%= new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Riyadh' }) %>
           </div>
         </header>
 
@@ -315,7 +315,7 @@
                 <div class="pr-match-row <%= lck ? 'pr-match-locked' : '' %>" data-round="<%= round %>">
                   <span class="pr-group-badge"><%= itm.match.stage %></span>
                   <div class="pr-team pr-team-a"><span class="pr-team-name"><%= itm.match.teamA %></span><div class="pr-flag-wrap"><img src="/flags/<%= teamFlags[itm.match.teamA]||'unknown' %>.png" class="pr-flag" onerror="this.src='/flags/unknown.png'" /></div></div>
-                  <div class="pr-match-meta"><span class="pr-match-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><%= new Date(itm.match.start_at).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) %></span><span class="pr-match-group"><%= itm.match.stage %></span></div>
+                  <div class="pr-match-meta"><span class="pr-match-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><%= new Date(itm.match.start_at).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Riyadh' }) %></span><span class="pr-match-group"><%= itm.match.stage %></span></div>
                   <div class="pr-vs-badge"><% if (itm.match.actual_scoreA!=null) { %><span class="pr-final-score"><%= itm.match.actual_scoreA %>-<%= itm.match.actual_scoreB %></span><% } else { %>VS<% } %></div>
                   <div class="pr-team pr-team-b"><div class="pr-flag-wrap"><img src="/flags/<%= teamFlags[itm.match.teamB]||'unknown' %>.png" class="pr-flag" onerror="this.src='/flags/unknown.png'" /></div><span class="pr-team-name"><%= itm.match.teamB %></span></div>
                   <div class="pr-action-col">

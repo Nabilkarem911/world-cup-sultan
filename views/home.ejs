@@ -100,8 +100,8 @@
                   <span class="hm2-match-name"><%= nextMatch.teamB %></span>
                 </div>
                 <div class="hm2-match-info">
-                  <div class="hm2-match-date"><%= new Date(nextMatch.start_at).toLocaleDateString('ar-SA',{weekday:'long'}) %></div>
-                  <div class="hm2-match-time"><%= new Date(nextMatch.start_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}) %></div>
+                  <div class="hm2-match-date"><%= new Date(nextMatch.start_at).toLocaleDateString('ar-SA',{weekday:'long',timeZone:'Asia/Riyadh'}) %></div>
+                  <div class="hm2-match-time"><%= new Date(nextMatch.start_at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Riyadh'}) %></div>
                   <div class="hm2-match-stadium"><%= nextMatch.stadium || '' %></div>
                 </div>
                 <div class="hm2-match-team">
@@ -272,7 +272,7 @@
                     <div class="hm-time-cell">
                       <span class="hm-time-text">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <%= new Date(match.start_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) %>
+                        <%= new Date(match.start_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Riyadh' }) %>
                       </span>
                     </div>
                   </td>

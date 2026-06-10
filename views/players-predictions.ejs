@@ -93,8 +93,8 @@
                   </div>
                 </div>
                 <div class="pp-meta">
-                  <span class="pp-date"><%= matchDate.toLocaleDateString('ar-SA', { weekday:'long', month:'long', day:'numeric' }) %></span>
-                  <span class="pp-time"><%= matchDate.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) %></span>
+                  <span class="pp-date"><%= matchDate.toLocaleDateString('ar-SA', { weekday:'long', month:'long', day:'numeric', timeZone:'Asia/Riyadh' }) %></span>
+                  <span class="pp-time"><%= matchDate.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Riyadh' }) %></span>
                   <span class="pp-stage"><%= m.stage || '' %><% if (m.round) { %> - الجولة <%= m.round %><% } %></span>
                 </div>
               </div>
@@ -197,7 +197,7 @@
                     <span class="pp-group-badge"><%= item.match.stage %></span>
                     <span class="pp-match-time">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                      <%= new Date(item.match.start_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) %>
+                      <%= new Date(item.match.start_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Riyadh' }) %>
                     </span>
                     <span class="pp-preds-count"><%= item.predictions.length %> توقع</span>
                   </div>

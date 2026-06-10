@@ -142,8 +142,8 @@
                 </div>
 
                 <div class="mp-score-col">
-                  <span class="mp-date"><%= matchDate.toLocaleDateString('ar-SA', { weekday:'long', month:'long', day:'numeric' }) %></span>
-                  <span class="mp-time"><%= matchDate.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) %></span>
+                  <span class="mp-date"><%= matchDate.toLocaleDateString('ar-SA', { weekday:'long', month:'long', day:'numeric', timeZone:'Asia/Riyadh' }) %></span>
+                  <span class="mp-time"><%= matchDate.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Riyadh' }) %></span>
                   <div class="mp-score-boxes">
                     <div class="mp-score-box">
                       <span class="mp-sbox-lbl">توقعك</span>

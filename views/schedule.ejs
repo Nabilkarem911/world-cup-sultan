@@ -94,9 +94,9 @@
                   </div>
                   <div class="ms-card-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span><%= new Date(match.start_at).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) %></span>
+                    <span><%= new Date(match.start_at).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Riyadh' }) %></span>
                     <span class="ms-info-dot"></span>
-                    <span><%= new Date(match.start_at).toLocaleDateString('ar-SA', { weekday:'long', month:'long', day:'numeric' }) %></span>
+                    <span><%= new Date(match.start_at).toLocaleDateString('ar-SA', { weekday:'long', month:'long', day:'numeric', timeZone:'Asia/Riyadh' }) %></span>
                   </div>
                   <div class="ms-card-action">
                     <% if (ended) { %>
@@ -245,7 +245,7 @@
           const byDate = {};
           matches.forEach(match => {
             const d = new Date(match.start_at);
-            const key = d.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const key = d.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Riyadh' });
             if (!byDate[key]) byDate[key] = [];
             byDate[key].push(match);
           });

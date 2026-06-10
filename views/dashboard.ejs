@@ -420,7 +420,7 @@
             teamB: m.teamB,
             flagA: teamFlags[m.teamA]||'unknown',
             flagB: teamFlags[m.teamB]||'unknown',
-            date: new Date(m.start_at).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric'}),
+            date: new Date(m.start_at).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric',timeZone:'Asia/Riyadh'}),
             visible: visiblePredictions.includes(m.id),
             preds: (matchPredictions && matchPredictions[m.id]) ? matchPredictions[m.id].map(function(p){ return {name:p.user_name||p.username, a:p.scoreA, b:p.scoreB}; }) : []
           };
